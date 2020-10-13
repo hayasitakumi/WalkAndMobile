@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <org.opencv.android.JavaCameraView
+        android:id="@+id/camera_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight = "3"
+        />
+
+    <TextView
+        android:id="@+id/text_view_Code"
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="250dp"
+        android:background="#00000000"
+        android:textColor="#ffffff"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/camera_view"
+        app:layout_constraintEnd_toEndOf="@id/camera_view"
+        app:layout_constraintHorizontal_bias="0.02"
+        app:layout_constraintStart_toStartOf="@id/camera_view" />
+
+    <TextView
+        android:id="@+id/text_view_Annai"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:background="#ffffff"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/camera_view"
+        app:layout_constraintEnd_toEndOf="@id/camera_view"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="@id/camera_view" />
+</androidx.constraintlayout.widget.ConstraintLayout>
