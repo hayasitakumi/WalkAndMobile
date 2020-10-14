@@ -1,6 +1,5 @@
 package com.matuilab.walkandmobile.http
 
-import android.app.Activity
 import android.media.MediaPlayer
 import android.os.AsyncTask
 import android.util.Log
@@ -9,13 +8,8 @@ import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
 
-class HttpGetAudio(
-        /** 音声案内を取得するためのクラス
-         * execute()の引数は、execute(URL全体 , ファイル名含むパス);
-         * 保存用のファイル名を作るのが面倒なので引数で渡してください。
-         */
-        private val mActivity: Activity) : AsyncTask<String?, Void?, String?>() {
-    protected override fun doInBackground(vararg params: String?): String? {
+class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
+    override fun doInBackground(vararg params: String?): String? {
         /** 案内音声を取得する
          * もし取得済みなら中断してonPostExecute()で音声再生
          */
@@ -52,7 +46,7 @@ class HttpGetAudio(
 
             // データ読取り用のストリームを取得（データ形式を意識せずにパッと受け取ってローカルに垂れ流す方針）
             /* DataInputStream : https://developer.android.com/reference/java/io/DataInputStream?hl=ja */
-            val inputStream = DataInputStream(connection!!.inputStream)
+            val inputStream = DataInputStream(connection.inputStream)
 
             // データの出力用のストリームを作成（データをストレージに輸送するための管）
             /* DataOutputStream : https://developer.android.com/reference/java/io/DataOutputStream?hl=ja

@@ -40,7 +40,7 @@ class HttpResponsAsync(private val mActivity: Activity) : AsyncTask<String?, Voi
         try {
             val url = URL(params[0])
             connection = url.openConnection() as HttpURLConnection
-            val `is` = connection!!.inputStream
+            val `is` = connection.inputStream
             val reader = BufferedReader(InputStreamReader(`is`, "UTF-8"))
             var line: String? = ""
             while (reader.readLine().also { line = it } != null) sb.append(line)
@@ -54,7 +54,7 @@ class HttpResponsAsync(private val mActivity: Activity) : AsyncTask<String?, Voi
     }
 
     override fun onPostExecute(result: String?) {
-//        (mActivity.findViewById<View>(R.id.text_view_Annai) as TextView).text = result
+        (mActivity.findViewById<View>(R.id.main_info) as TextView).text = result
         // doInBackground後処理
     }
 }

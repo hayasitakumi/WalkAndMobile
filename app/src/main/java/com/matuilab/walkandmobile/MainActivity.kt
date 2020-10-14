@@ -8,21 +8,12 @@
 //リストビューを使って表示できないか試す
 package com.matuilab.walkandmobile
 
-import android.Manifest
-import android.app.Activity
 import android.app.AlertDialog
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.matuilab.walkandmobile.http.HttpGetAudio
 import com.matuilab.walkandmobile.http.HttpGetJson
 import com.matuilab.walkandmobile.http.HttpResponsAsync
@@ -47,38 +38,37 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
         //static int count = 50;
         //int m = 0;
         //var annai: String? = null
-        var audioTask // ------ 2020/02/02
-                : HttpGetAudio? = null
+        var audioTask: HttpGetAudio? = null
 
-        fun getPermissionCamera(activity: Activity?): Boolean {
-            return if ((ContextCompat.checkSelfPermission(
-                            (activity)!!, Manifest.permission.CAMERA)
-                            != PackageManager.PERMISSION_GRANTED)) {
-                val permissions = arrayOf(Manifest.permission.CAMERA)
-                ActivityCompat.requestPermissions(
-                        (activity),
-                        permissions,
-                        0)
-                false
-            } else {
-                true
-            }
-        }
-
-        fun getPermission(activity: Activity?) {
-            // カメラと外部ストレージの権限取得
-            if (((ContextCompat.checkSelfPermission((activity)!!, Manifest.permission.CAMERA)
-                            != PackageManager.PERMISSION_GRANTED)
-                            || (ContextCompat.checkSelfPermission((activity), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            != PackageManager.PERMISSION_GRANTED))) {
-                // 権限が欲しい、requestPermissions()
-                val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                ActivityCompat.requestPermissions(
-                        (activity),
-                        permissions,
-                        0)
-            }
-        }
+//        fun getPermissionCamera(activity: Activity?): Boolean {
+//            return if ((ContextCompat.checkSelfPermission(
+//                            (activity)!!, Manifest.permission.CAMERA)
+//                            != PackageManager.PERMISSION_GRANTED)) {
+//                val permissions = arrayOf(Manifest.permission.CAMERA)
+//                ActivityCompat.requestPermissions(
+//                        (activity),
+//                        permissions,
+//                        0)
+//                false
+//            } else {
+//                true
+//            }
+//        }
+//
+//        fun getPermission(activity: Activity?) {
+//            // カメラと外部ストレージの権限取得
+//            if (((ContextCompat.checkSelfPermission((activity)!!, Manifest.permission.CAMERA)
+//                            != PackageManager.PERMISSION_GRANTED)
+//                            || (ContextCompat.checkSelfPermission((activity), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                            != PackageManager.PERMISSION_GRANTED))) {
+//                // 権限が欲しい、requestPermissions()
+//                val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                ActivityCompat.requestPermissions(
+//                        (activity),
+//                        permissions,
+//                        0)
+//            }
+//        }
 
         init {
             System.loadLibrary("native-lib")
@@ -87,8 +77,8 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
 
     //public  MediaPlayer mediaPlayer;//*******2020-1-31**************
 //    private var m_cameraView: CameraBridgeViewBase? = null
-    var textCode: TextView? = null
-    var textInfo: TextView? = null
+//    var textCode: TextView? = null
+//    var textInfo: TextView? = null
     var mHandler: Handler? = null
     private var saveAppDir //保存先パス（外部ストレージ優先でアプリ固有のディレクトリ）
             : String? = null
@@ -151,9 +141,9 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
         //todo 補正を無くし、機種依存を無くす(全ての端末で同じ輝度に合わせる)
 //        main_cameraview.setMaxFrameSize(1280, 720)
         //     m_cameraView.enableView();
-        textCode = findViewById(R.id.main_code)
-        textInfo = findViewById(R.id.main_info)
-        audioTask = HttpGetAudio(this)
+//        textCode = findViewById(R.id.main_code)
+//        textInfo = findViewById(R.id.main_info)
+        audioTask = HttpGetAudio()
     } //onCreate
 
     /*  SDカードを使用する手立てがないため未使用
@@ -207,59 +197,60 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
         Angle = Ret[2]
         mean0 = Ret[3]
         //mean1 = Ret[4];
-        if (Ret[0] >= 0) { ///////////////////////イベント用動画再生////////////////
-            //鼓門
-            if (Code == 896) {
-                val videoId = "KmpLfGiAVfI"
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:$videoId"))
-                    startActivity(intent)
-                } catch (ex: ActivityNotFoundException) {
-                    val intent = Intent(Intent.ACTION_VIEW,
-                            Uri.parse("https://www.youtube.com/watch?v=$videoId"))
-                    startActivity(intent)
-                }
-            }
-
-            //ひがし茶屋街
-            if (Code == 784) {
-                val videoId = "xU-6auotI0w"
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:$videoId"))
-                    startActivity(intent)
-                } catch (ex: ActivityNotFoundException) {
-                    val intent = Intent(Intent.ACTION_VIEW,
-                            Uri.parse("https://www.youtube.com/watch?v=$videoId"))
-                    startActivity(intent)
-                }
-            }
-
-            //武家屋敷
-            if (Code == 800) {
-                val videoId = "T-_ScSVt7j8"
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:$videoId"))
-                    startActivity(intent)
-                } catch (ex: ActivityNotFoundException) {
-                    val intent = Intent(Intent.ACTION_VIEW,
-                            Uri.parse("https://www.youtube.com/watch?v=$videoId"))
-                    startActivity(intent)
-                }
-            }
-
-            //石川門
-            if (Code == 832) {
-                val videoId = "a7RsZ09vN0A"
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:$videoId"))
-                    startActivity(intent)
-                } catch (ex: ActivityNotFoundException) {
-                    val intent = Intent(Intent.ACTION_VIEW,
-                            Uri.parse("https://www.youtube.com/watch?v=$videoId"))
-                    startActivity(intent)
-                }
-            }
-        }
+//        ///////////////////////イベント用動画再生////////////////
+//        if (Ret[0] >= 0) {
+//            //鼓門
+//            if (Code == 896) {
+//                val videoId = "KmpLfGiAVfI"
+//                try {
+//                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:$videoId"))
+//                    startActivity(intent)
+//                } catch (ex: ActivityNotFoundException) {
+//                    val intent = Intent(Intent.ACTION_VIEW,
+//                            Uri.parse("https://www.youtube.com/watch?v=$videoId"))
+//                    startActivity(intent)
+//                }
+//            }
+//
+//            //ひがし茶屋街
+//            if (Code == 784) {
+//                val videoId = "xU-6auotI0w"
+//                try {
+//                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:$videoId"))
+//                    startActivity(intent)
+//                } catch (ex: ActivityNotFoundException) {
+//                    val intent = Intent(Intent.ACTION_VIEW,
+//                            Uri.parse("https://www.youtube.com/watch?v=$videoId"))
+//                    startActivity(intent)
+//                }
+//            }
+//
+//            //武家屋敷
+//            if (Code == 800) {
+//                val videoId = "T-_ScSVt7j8"
+//                try {
+//                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:$videoId"))
+//                    startActivity(intent)
+//                } catch (ex: ActivityNotFoundException) {
+//                    val intent = Intent(Intent.ACTION_VIEW,
+//                            Uri.parse("https://www.youtube.com/watch?v=$videoId"))
+//                    startActivity(intent)
+//                }
+//            }
+//
+//            //石川門
+//            if (Code == 832) {
+//                val videoId = "a7RsZ09vN0A"
+//                try {
+//                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:$videoId"))
+//                    startActivity(intent)
+//                } catch (ex: ActivityNotFoundException) {
+//                    val intent = Intent(Intent.ACTION_VIEW,
+//                            Uri.parse("https://www.youtube.com/watch?v=$videoId"))
+//                    startActivity(intent)
+//                }
+//            }
+//        }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,7 +261,7 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
                 val wavfile = String.format("wm%05d_%d.wav", Code, Angle)
                 val wavurl = "http://ec2-3-136-168-45.us-east-2.compute.amazonaws.com/tenji/message/$wavfile"
                 // 音声取得再生タスクの実行 ------ 2020/02/02
-                audioTask = HttpGetAudio(this)
+                audioTask = HttpGetAudio()
                 audioTask!!.execute(wavurl, "$saveAppDir/$wavfile") //引数は【音声ファイルのURL】と【音声ファイルの絶対パス】
                 // getFilesDir()について : https://developer.android.com/training/data-storage/files/internal?hl=ja
             }
@@ -369,9 +360,11 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
         //run()の中の処理はメインスレッドで動作されます。
         {
             if (Code == 0) {
-                textCode!!.text = "Code :" + 0 + "\nMeanGC= " + mean0 + "\nAngle  :  " + -1
+                main_code.text = "0"
+                main_angle.text = "-1"
             } else {
-                textCode!!.text = "Code :$Code\nMeanAGC=$mean0\nAngle  :  $Angle"
+                main_code.text = Code.toString()
+                main_angle.text = Angle.toString()
             }
         })
         return imageMat
