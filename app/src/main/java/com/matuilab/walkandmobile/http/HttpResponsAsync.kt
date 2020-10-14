@@ -15,9 +15,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class HttpResponsAsync(private val mActivity: Activity) : AsyncTask<String?, Void?, String?>() {
-    protected override fun doInBackground(vararg params: String?): String? {
-
-        ////// ローカルDBへの登録状況を確認 ------ 2020/02/11
+    override fun doInBackground(vararg params: String?): String? {
         // DBへ接続
         val db = Room.databaseBuilder(mActivity, AppDatabase::class.java, "tenji").build()
         // 案内文問合せ
@@ -25,7 +23,7 @@ class HttpResponsAsync(private val mActivity: Activity) : AsyncTask<String?, Voi
         message = db.tenjiDao().getMessage(params[1]!!.toInt(), params[2]!!.toInt(), "normal"
         )
         // DBに案内文があるか確認
-        if (0 < message!!.size) {    //クラッシュ防止
+        if (message!!.isNotEmpty()) {    //クラッシュ防止
             if (message[0] != null) {
                 // あれば終了
                 Log.d("java_debug", """CODE : ${params[1]}	ANGLE : ${params[2]}${message[0]}""")

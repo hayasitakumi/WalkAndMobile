@@ -18,8 +18,8 @@ import permissions.dispatcher.RuntimePermissions
 @RuntimePermissions
 class PermissionCheckActivity : AppCompatActivity() {
 
-    var isCameraAllowed = false
-    val REQEST_CODE_MAGIC = 1212
+    private var isCameraAllowed = false
+    private val REQEST_CODE_MAGIC = 1212
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

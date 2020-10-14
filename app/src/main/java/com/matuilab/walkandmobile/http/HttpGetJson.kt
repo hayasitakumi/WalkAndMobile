@@ -16,12 +16,6 @@ import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
 
-//todo 毎回ダイアログが出るようになっている
-//todo サーバ側のデータが更新されていなければダイアログを出さないようにする(バージョン管理)
-//todo ダウンロードした場合全て入れ替えになるので毎回全件ダウンロードするようになっている
-/*
-* Roomについての解説 : https://tech.recruit-mp.co.jp/mobile/post-12311/
-* */
 class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?, Void?>() {
 
     // 本当はURLクラスを返却するモジュールを作るのが望ましい（サーバのアドレス変更に対応しやすい）
@@ -35,13 +29,13 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
                 .setTitle("ダウンロード中") //ダイアログのタイトル表示
                 .setMessage("...") //ダイアログの本文
                 .setCancelable(false) //勝手に閉じさせないようにする
-                .setNegativeButton("Cancel") { dialogInterface, i ->
+                .setNegativeButton("Cancel") { _, _ ->
                     // キャンセルボタン押したとき
                     cancel(true)
                 }
                 .show() //表示実行
     }
-    protected override fun doInBackground(vararg params: String?): Void? {
+    override fun doInBackground(vararg params: String?): Void? {
         /** 音声ファイルの保存を行いたいので、引数は getFilesDir().getAbsolutePath() をください
          * 引数0 : 音声ファイル保存先パス
          * 引数1 : 音声ファイル取得無効化（何かしら入力されていたらDB同期のみ、音声ファイルは取得しない）
@@ -77,7 +71,7 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
             }
 
             // データ入力の作成（HttpResponsAsyncから移植）
-            val inputStream = connection!!.inputStream
+            val inputStream = connection.inputStream
             val reader = BufferedReader(InputStreamReader(inputStream, "UTF-8"))
             var line: String? = ""
             // 文字列として取り出し
@@ -92,7 +86,7 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
 
             // DB更新用にblockmessageの型を量産、後に当てはめていく
             blockmessage = arrayOfNulls(jsonArray.length())
-            blockmessage2 = Array<Array<String?>>(jsonArray.length()) { arrayOfNulls<String>(7) } //代替案
+            blockmessage2 = Array(jsonArray.length()) { arrayOfNulls(7) } //代替案
 
             // 配列を一つずつ取り出し（DB登録前の下準備）
             for (i in 0 until jsonArray.length()) {
