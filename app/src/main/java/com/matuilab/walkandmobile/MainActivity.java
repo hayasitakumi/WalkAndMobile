@@ -300,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
             if(mediaPlayer.isPlaying() != true) {
                 // URL作成
-                String wavfile = String.format("wm%05d_%d.wav", Code, Angle);
+                String wavfile = String.format("wm%05d_%d.mp3", Code, Angle);
                 String wavurl = "http://ec2-3-136-168-45.us-east-2.compute.amazonaws.com/tenji/message/" + wavfile;
                 // 音声取得再生タスクの実行 ------ 2020/02/02
                 audioTask = new HttpGetAudio(this);
