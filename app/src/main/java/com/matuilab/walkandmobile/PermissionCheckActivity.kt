@@ -52,9 +52,9 @@ class PermissionCheckActivity : AppCompatActivity() {
 
     private fun startNextActivity() {
 
-        if (isCameraAllowed == true) {
+        if (isCameraAllowed) {
 
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, WebActivity::class.java)
             startActivity(intent)
             finish()
         } else {

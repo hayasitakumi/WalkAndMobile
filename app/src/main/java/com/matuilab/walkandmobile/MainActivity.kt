@@ -1,11 +1,3 @@
-///////////////2019.11.21///////////////////
-//String型のsampleを設定
-//onCameraFrame内でsampleの中を設定、エラー
-//TextViewにfinal型ｗ付けてもならない
-//jniから渡された変数を表示する方法を調査する必要あり
-//////////////////2019.11.26///////////////////////
-//まだできない
-//リストビューを使って表示できないか試す
 package com.matuilab.walkandmobile
 
 import android.app.AlertDialog
@@ -41,7 +33,7 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
     }
 
     var mHandler: Handler? = null
-    private var saveAppDir: String? = null //保存先パス（外部ストレージ優先でアプリ固有のディレクトリ）
+    private var saveAppDir: String? = null
     private val mLoaderCallback: BaseLoaderCallback = object : BaseLoaderCallback(this) {
         override fun onManagerConnected(status: Int) {
             when (status) {
@@ -94,11 +86,11 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
         if ((Ret[0] >= 1) && (Code > 0) && (Angle >= 0)) {
             if (!HttpGetAudio.mediaPlayer.isPlaying) {
                 // URL作成
-                val wavfile = String.format("wm%05d_%d.mp3", Code, Angle)
-                val wavurl = "http://ec2-3-136-168-45.us-east-2.compute.amazonaws.com/tenji/message/$wavfile"
+                val audioFile = String.format("wm%05d_%d.mp3", Code, Angle)
+                val audioUrl = "http://ec2-3-136-168-45.us-east-2.compute.amazonaws.com/tenji/message/$audioFile"
                 // 音声取得再生タスクの実行 ------ 2020/02/02
                 audioTask = HttpGetAudio()
-                audioTask!!.execute(wavurl, "$saveAppDir/$wavfile") //引数は【音声ファイルのURL】と【音声ファイルの絶対パス】
+                audioTask!!.execute(audioUrl, "$saveAppDir/$audioFile") //引数は【音声ファイルのURL】と【音声ファイルの絶対パス】
             }
             if (Code != CodeSab || Angle != AngleSab) {
                 // 案内文取得
