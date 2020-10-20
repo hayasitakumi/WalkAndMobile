@@ -98,6 +98,7 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
                 val url = urlSt + "code=" + Code + "&angle=" + Angle
                 val task = HttpResponsAsync(this)
                 task.execute(url, Code.toString(), Angle.toString()) //引数追加 ------ 2020/02/11
+
             }
             // 取得コードをCodeSabに入れ、同じコードを取得し続けても通信をしないようにする  ------ 2020/02/01
             CodeSab = Code

@@ -60,8 +60,8 @@ dependencies {
     // 2020/02/07
     //////////
 
-    annotationProcessor 'com.jakewharton:butterknife:10.2.3'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
+    kapt 'com.jakewharton:butterknife:10.2.3'
+    kapt 'com.jakewharton:butterknife-compiler:10.2.3'
 
     implementation("com.github.hotchemi:permissionsdispatcher:3.3.1") {
         // Fragmentで使用したい場合はこの記述を外す

@@ -1,10 +1,12 @@
 package com.matuilab.walkandmobile.http
 
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.AsyncTask
 import android.util.Log
-import android.view.View
 import android.widget.TextView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.room.Room
 import com.matuilab.walkandmobile.R
 import com.matuilab.walkandmobile.data.AppDatabase
@@ -23,7 +25,7 @@ class HttpResponsAsync(private val mActivity: Activity) : AsyncTask<String?, Voi
         message = db.tenjiDao().getMessage(params[1]!!.toInt(), params[2]!!.toInt(), "normal"
         )
         // DBに案内文があるか確認
-        if (message!!.isNotEmpty()) {    //クラッシュ防止
+        if (message!!.isNotEmpty()) {
             if (message[0] != null) {
                 // あれば終了
                 Log.d("java_debug", """CODE : ${params[1]}	ANGLE : ${params[2]}${message[0]}""")
@@ -52,7 +54,12 @@ class HttpResponsAsync(private val mActivity: Activity) : AsyncTask<String?, Voi
     }
 
     override fun onPostExecute(result: String?) {
-        (mActivity.findViewById<View>(R.id.main_info) as TextView).text = result
         // doInBackground後処理
+        if(result!!.take(4) == "http"){
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(result))
+
+            startActivity( mActivity, intent, null)
+        }
+        mActivity.findViewById<TextView>(R.id.main_info).text = result
     }
 }
