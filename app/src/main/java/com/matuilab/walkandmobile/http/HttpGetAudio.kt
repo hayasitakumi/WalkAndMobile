@@ -19,8 +19,8 @@ class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
         var return_file: String? = null
 
         // ファイルがあるか確認、あれば終了
-        val wavfile = File(params[1])
-        if (wavfile.exists()) {
+        val audioFile = File(params[1])
+        if (audioFile.exists()) {
             Log.i("java_info", "Found Audio.")
             return params[1]
         }
@@ -30,12 +30,12 @@ class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
         var connection: HttpURLConnection? = null
         try {
             // 音声ファイルのURL受け取り
-            val wavurl = URL(params[0])
+            val audioUrl = URL(params[0])
 
             // URLから接続作成（おそらくこの時点でアクセスされてる）
             /* URL : https://docs.oracle.com/javase/jp/8/docs/api/java/net/URL.html
                URLConnection : https://docs.oracle.com/javase/jp/8/docs/api/java/net/URLConnection.html */
-            connection = wavurl.openConnection() as HttpURLConnection
+            connection = audioUrl.openConnection() as HttpURLConnection
 
             // 接続結果（レスポンスステータスコード）を確認
             val statusCode = connection.responseCode

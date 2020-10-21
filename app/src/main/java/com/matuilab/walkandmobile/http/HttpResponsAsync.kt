@@ -53,8 +53,8 @@ class HttpResponsAsync(private val mActivity: Activity) : AsyncTask<String?, Voi
         return sb.toString()
     }
 
+    // doInBackground後処理
     override fun onPostExecute(result: String?) {
-        // doInBackground後処理
         if(result!!.take(4) == "http"){
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(result))
 
