@@ -1,6 +1,8 @@
 package com.matuilab.walkandmobile;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
@@ -13,6 +15,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import static androidx.core.content.ContextCompat.startActivity;
 
 public class HttpResponsAsync extends AsyncTask<String, Void, String> {
     private Activity mActivity;
@@ -67,10 +71,16 @@ public class HttpResponsAsync extends AsyncTask<String, Void, String> {
     }
 
     @Override
+    // doInBackground後処理
     protected void onPostExecute(String result) {
+        if(result != null) {
+            if(result.substring(0, 4).equals("http")){
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(result));
 
-        ((TextView)mActivity.findViewById(R.id.text_view_Annai)).setText(result);
-        // doInBackground後処理
+                startActivity( mActivity, intent, null);
+            }
+            ((TextView) mActivity.findViewById(R.id.text_view_Annai)).setText(result);
+        }
     }
 
 }

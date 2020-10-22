@@ -235,63 +235,65 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         mean0 = Ret[3];
         //mean1 = Ret[4];
 
-        if(Ret[0] >= 0) {///////////////////////イベント用動画再生////////////////
-            //鼓門
-            if (Code == 896) {
-                String videoId = "KmpLfGiAVfI";
-
-                try {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videoId));
-                    startActivity(intent);
-                } catch (ActivityNotFoundException ex) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("https://www.youtube.com/watch?v=" + videoId));
-                    startActivity(intent);
-                }
-            }
-
-            //ひがし茶屋街
-            if (Code == 784) {
-                String videoId = "xU-6auotI0w";
-
-                try {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videoId));
-                    startActivity(intent);
-                } catch (ActivityNotFoundException ex) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("https://www.youtube.com/watch?v=" + videoId));
-                    startActivity(intent);
-                }
-            }
-
-            //武家屋敷
-            if (Code == 800) {
-                String videoId = "T-_ScSVt7j8";
-
-                try {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videoId));
-                    startActivity(intent);
-                } catch (ActivityNotFoundException ex) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("https://www.youtube.com/watch?v=" + videoId));
-                    startActivity(intent);
-                }
-            }
-
-            //石川門
-            if (Code == 832) {
-                String videoId = "a7RsZ09vN0A";
-
-                try {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videoId));
-                    startActivity(intent);
-                } catch (ActivityNotFoundException ex) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("https://www.youtube.com/watch?v=" + videoId));
-                    startActivity(intent);
-                }
-            }
-        }
+//        if(Ret[0] >= 0) {///////////////////////イベント用動画再生////////////////
+//            //鼓門
+//            if (Code == 896) {
+//                String videoId = "KmpLfGiAVfI";
+//
+//                try {
+//                    Log.d("MainLog", "try");
+//                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videoId));
+//                    startActivity(intent);
+//                } catch (ActivityNotFoundException ex) {
+//                    Log.d("MainLog", "catch");
+//                    Intent intent = new Intent(Intent.ACTION_VIEW,
+//                            Uri.parse("https://www.youtube.com/watch?v=" + videoId));
+//                    startActivity(intent);
+//                }
+//            }
+//
+//            //ひがし茶屋街
+//            if (Code == 784) {
+//                String videoId = "xU-6auotI0w";
+//
+//                try {
+//                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videoId));
+//                    startActivity(intent);
+//                } catch (ActivityNotFoundException ex) {
+//                    Intent intent = new Intent(Intent.ACTION_VIEW,
+//                            Uri.parse("https://www.youtube.com/watch?v=" + videoId));
+//                    startActivity(intent);
+//                }
+//            }
+//
+//            //武家屋敷
+//            if (Code == 800) {
+//                String videoId = "T-_ScSVt7j8";
+//
+//                try {
+//                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videoId));
+//                    startActivity(intent);
+//                } catch (ActivityNotFoundException ex) {
+//                    Intent intent = new Intent(Intent.ACTION_VIEW,
+//                            Uri.parse("https://www.youtube.com/watch?v=" + videoId));
+//                    startActivity(intent);
+//                }
+//            }
+//
+//            //石川門
+//            if (Code == 832) {
+//                String videoId = "a7RsZ09vN0A";
+//
+//                try {
+//                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videoId));
+//                    startActivity(intent);
+//                } catch (ActivityNotFoundException ex) {
+//                    Intent intent = new Intent(Intent.ACTION_VIEW,
+//                            Uri.parse("https://www.youtube.com/watch?v=" + videoId));
+//                    startActivity(intent);
+//                }
+//            }
+//        }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -310,6 +312,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
             if(Code != CodeSab || Angle != AngleSab) {
                 // 案内文取得
+                Log.d("MainLog", "task start");
                 String urlSt = "http://ec2-3-136-168-45.us-east-2.compute.amazonaws.com/tenji/get_message.py?";
                 String url = urlSt + "code=" + Code + "&angle=" + Angle;
                 HttpResponsAsync task = new HttpResponsAsync(this);
@@ -430,6 +433,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     protected void onResume() {
         super.onResume();
+
+        CodeSab = 0;
+        AngleSab = -1;
         // 非同期でライブラリの読み込み/初期化を行う
         if (!OpenCVLoader.initDebug()) {
             //        Log.d("onResume", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
