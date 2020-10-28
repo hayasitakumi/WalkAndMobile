@@ -8,6 +8,9 @@ import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
 
+/* 音声案内を取得するためのクラス
+   execute()の引数は、execute( URL全体 , ファイル名含むパス , 言語 )
+*/
 class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
     override fun doInBackground(vararg params: String?): String? {
         /** 案内音声を取得する
@@ -16,7 +19,7 @@ class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
         // データ取得の参考 : https://java.keicode.com/lang/http-download-and-save.php
 
         // returnで使う（保存成功、ファイルありなら該当ファイル名を、失敗ならnullを返す）
-        var return_file: String? = null
+        var returnFile: String? = null
 
         // ファイルがあるか確認、あれば終了
         val audioFile = File(params[1])
@@ -48,6 +51,17 @@ class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
             /* DataInputStream : https://developer.android.com/reference/java/io/DataInputStream?hl=ja */
             val inputStream = DataInputStream(connection.inputStream)
 
+            // ディレクトリの確認 --- 2020/03/06
+            //ファイル名を取得（splitで/の位置で切り分け）
+            val dirs: List<String> = params[1]!!.split("/")
+            //ファイル名を含まないパスで切り出し（パスparams[1]の頭から、ファイル名の長さを除いた部分）
+            val dir = params[1]!!.substring(0, params[1]!!.length - dirs[dirs.size - 1].length)
+            val fdir = File(dir)
+            if (!fdir.exists()) {
+                fdir.mkdir()
+                Log.d("java_debug", "Make Directory : " + fdir.absolutePath)
+            }
+
             // データの出力用のストリームを作成（データをストレージに輸送するための管）
             /* DataOutputStream : https://developer.android.com/reference/java/io/DataOutputStream?hl=ja
                ファイル出力を効率化するためにBufferedOutputStreamを挟む
@@ -73,7 +87,7 @@ class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
 
             // ここまで来れたら取得成功
             // 第3引数に何か含まれていたら再生しない、空欄だったら音声再生
-            return_file = if (3 <= params.size) {
+            returnFile = if (3 <= params.size) {
                 null
             } else {
                 params[1]
@@ -92,7 +106,7 @@ class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
             Log.d("java_debug", "End of getting Audio.")
             connection!!.disconnect()
         }
-        return return_file
+        return returnFile
     }
 
     override fun onPostExecute(result: String?) {

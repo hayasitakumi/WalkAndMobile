@@ -1,44 +1,55 @@
 /**サーバから案内情報blockmessageのJSONを取得して、DBに追加する処理
  */
 package com.matuilab.walkandmobile.http
-
+// DB移行に関して
 import android.app.Activity
 import android.app.AlertDialog
 import android.os.AsyncTask
 import android.util.Log
 import androidx.room.Room
+import com.matuilab.walkandmobile.R
+import com.matuilab.walkandmobile.ServerConnection
 import com.matuilab.walkandmobile.data.AppDatabase
+import com.matuilab.walkandmobile.data.AppDatabase.Companion.MIGRATION_1_2
 import com.matuilab.walkandmobile.data.model.Blockmessage
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
+import java.lang.reflect.InvocationTargetException
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
 
+/*
+* Roomについての解説 : https://tech.recruit-mp.co.jp/mobile/post-12311/
+* */
 class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?, Void?>() {
+    // サーバ接続用クラス
+    private var serverConnection: ServerConnection = ServerConnection()
 
-    // 本当はURLクラスを返却するモジュールを作るのが望ましい（サーバのアドレス変更に対応しやすい）
-    private val server_url = "http://ec2-3-136-168-45.us-east-2.compute.amazonaws.com/tenji/"
+    // サーバURLの取得（URLの変更はServerConnection.javaにて行います） --- 2020/03/06
+    private val server_url: String = serverConnection.serverUrl
 
     // プログレスダイアログ(本当はプログレスバーが良い）
     private var dialog: AlertDialog? = null
     override fun onPreExecute() {
         // 進捗表示の為にダイアログを用意
         dialog = AlertDialog.Builder(mActivity)
-                .setTitle("ダウンロード中") //ダイアログのタイトル表示
+                .setTitle(mActivity.getString(R.string.download_in_advance_downloading_title)) //ダイアログのタイトル表示
                 .setMessage("...") //ダイアログの本文
                 .setCancelable(false) //勝手に閉じさせないようにする
-                .setNegativeButton("Cancel") { _, _ ->
+                .setNegativeButton(mActivity.getString(R.string.download_in_advance_nbutton)) { dialogInterface, i ->
                     // キャンセルボタン押したとき
                     cancel(true)
                 }
                 .show() //表示実行
     }
+
     override fun doInBackground(vararg params: String?): Void? {
         /** 音声ファイルの保存を行いたいので、引数は getFilesDir().getAbsolutePath() をください
-         * 引数0 : 音声ファイル保存先パス
-         * 引数1 : 音声ファイル取得無効化（何かしら入力されていたらDB同期のみ、音声ファイルは取得しない）
+         * 引数0 : アプリ専用のディレクトリgetFilesDir().getAbsolutePath()（音声ファイル保存先パス）
+         * 引数1 : アンダーバー付き言語コード
+         * 引数2 : 音声ファイル取得無効化（何かしら入力されていたらDB同期のみ、音声ファイルは取得しない）
          * メソッド内の構成
          * ◆データベース更新
          * 　・サーバ接続
@@ -46,27 +57,34 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
          * ◆音声ファイル取得
          * 　・音声取得
          */
+        val _lang = params[1] //アンダーバー付き言語コード
         var connection: HttpURLConnection? = null
         val sb = StringBuilder()
         val blockmessage: Array<Blockmessage?> //音声取得でも使うので大域宣言
-        val blockmessage2: Array<Array<String?>> //上の変数に入れようとすると例外発動、仕方ないのでこれ
+        val blockmessage2: Array<Array<String?>> //DBのデータ格納用（上の変数に入れようとすると例外発動、仕方ないのでこれ）
 
         /////////////////////////
         //// データベース更新 ////
         /////////////////////////
         try {
             ////////// サーバ接続
-            publishProgress("データベース取得...")
+            publishProgress(mActivity.getString(R.string.download_in_advance_getDB))
 
+            // データ取得サブシステムへ接続 - 2020/03/06(追加)
+            connection = serverConnection.db2json_lang("blockmessage", _lang!!)
+
+            /* ServerConnectionクラス登場以前の接続方法
             // URLを指定
-            val url = URL(server_url + "get_db2json.py?data=blockmessage")
+            URL url = new URL(server_url+"get_db2json.py?data=blockmessage"+_lang);
             // 指定URLに接続
-            connection = url.openConnection() as HttpURLConnection
+            connection = (HttpURLConnection) url.openConnection();
+             */
 
             // 接続結果（レスポンスステータスコード）を確認
             val statusCode = connection.responseCode
             if (statusCode != HttpURLConnection.HTTP_OK) {
                 // エラー表示用に、ステータスコードで例外メッセージを設定
+                Log.e("java_error", "Get JSON from DB - " + connection.url)
                 throw Exception("Response Status Code : $statusCode")
             }
 
@@ -85,7 +103,7 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
             var jsonObject: JSONObject
 
             // DB更新用にblockmessageの型を量産、後に当てはめていく
-            blockmessage = arrayOfNulls(jsonArray.length())
+            blockmessage = arrayOfNulls<Blockmessage>(jsonArray.length())
             blockmessage2 = Array(jsonArray.length()) { arrayOfNulls(7) } //代替案
 
             // 配列を一つずつ取り出し（DB登録前の下準備）
@@ -118,31 +136,85 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
             }
 
 
-            ////////// DB操作
-            publishProgress("データベース同期...")
+            ////////// DB操作 - 2020/03/06(変更)
+            publishProgress(mActivity.getString(R.string.download_in_advance_syncDB))
 
             // DB接続
             // Contextについて : https://qiita.com/roba4coding/items/0585b8240873ec5e9c20
-            val db = Room.databaseBuilder(mActivity, AppDatabase::class.java, "tenji").build()
-            // レコード全削除
-            db.tenjiDao().deleteAllBlockmessage()
-            // レコード追加
-            //db.daoTenji().insertBlockmessage(blockmessage);
-            for (i in blockmessage2.indices) {    //代替案
-                db.tenjiDao().insertBlockmessageB(blockmessage2[i][0]!!.toInt(), blockmessage2[i][1]!!.toInt(), blockmessage2[i][2]!!.toInt(),
+            val db: AppDatabase = Room.databaseBuilder<AppDatabase>(mActivity, AppDatabase::class.java, "tenji")
+                    .addMigrations(MIGRATION_1_2)
+                    .build()
+
+            // 使用言語によって分岐（使う登録するテーブルが異なる為）
+            if (_lang == "") {
+                ////////// 日本語
+                // レコード全削除
+                db.daoTenji().deleteAllBlockmessage()
+                /* 【エラーにより使用不可】動的呼び出し（リフレクション）による実行、各メソッド名の後ろにアンダーバー付き言語コードを付けているため
+                Method method = db.daoTenji().getClass().getMethod("deleteAllBlockmessage"+_lang, String.class);    //動的呼び出しの準備
+                method.invoke(db, new String("%"));
+                 */
+
+                // レコード追加
+                //db.daoTenji().insertBlockmessage(blockmessage);
+                for (i in blockmessage2.indices) {    //代替案
+                    db.daoTenji().insertBlockmessageB(blockmessage2[i][0]!!.toInt(), blockmessage2[i][1]!!.toInt(), blockmessage2[i][2]!!.toInt(),
+                            blockmessage2[i][3],
+                            blockmessage2[i][4],
+                            blockmessage2[i][5],
+                            blockmessage2[i][6]
+                    )
+                    /* 【エラーにより使用不可】動的呼び出し（リフレクション）による実行、各メソッド名の後ろにアンダーバー付き言語コードを付けているため
+                method = db.daoTenji().getClass().getMethod( "insertBlockmessageB", Integer.class, Integer.class, Integer.class, String.class, String.class, String.class, String.class );    //動的呼び出しの準備
+                method.invoke(db,
+                        Integer.parseInt(blockmessage2[i][0]),
+                        Integer.parseInt(blockmessage2[i][1]),
+                        Integer.parseInt(blockmessage2[i][2]),
                         blockmessage2[i][3],
                         blockmessage2[i][4],
                         blockmessage2[i][5],
-                        blockmessage2[i][6]
-                )
-                publishProgress("データベース同期...  " + (i + 1) + "件")
-            } //INSERTの代替案
+                        blockmessage2[i][6]);
+                */
+                    // 進捗状況表示
+                    publishProgress(mActivity.getString(R.string.download_in_advance_syncDB) + (i + 1) + mActivity.getString(R.string.download_in_advance_unit))
+                } //for - INSERTの代替案
+            } else if (_lang == "_en") {
+                ////////// 英語
+                // レコード全削除
+                db.daoTenji().deleteAllBlockmessage_en()
+                // レコード追加
+                for (i in blockmessage2.indices) {    //代替案
+                    db.daoTenji().insertBlockmessageB_en(blockmessage2[i][0]!!.toInt(), blockmessage2[i][1]!!.toInt(), blockmessage2[i][2]!!.toInt(),
+                            blockmessage2[i][3],
+                            blockmessage2[i][4],
+                            blockmessage2[i][5],
+                            blockmessage2[i][6]
+                    )
+                    // 進捗状況表示
+                    publishProgress(mActivity.getString(R.string.download_in_advance_syncDB) + (i + 1) + mActivity.getString(R.string.download_in_advance_unit))
+                } //for - INSERTの代替案
+            } else {
+                // 未知の言語
+                throw Exception("Selected unknown language code : $_lang")
+            }
         } catch (e: MalformedURLException) {
             Log.e("java_error", "Get JSON from DB - Malformed URL.")
             e.printStackTrace()
             return null
         } catch (e: IOException) {
             Log.e("java_error", "Get JSON from DB - Failed open connection.")
+            e.printStackTrace()
+            return null
+        } catch (e: NoSuchMethodException) {
+            Log.e("java_error", "Get JSON from DB　- NoSuchMethodException : notFound DB query method.(deleteAllBlockmessage$_lang)or(insertBlockmessageB$_lang)")
+            e.printStackTrace()
+            return null
+        } catch (e: IllegalAccessException) {
+            Log.e("java_error", "Get JSON from DB　- IllegalAccessException : Failed use DB query method.(deleteAllBlockmessage$_lang)or(insertBlockmessageB$_lang)")
+            e.printStackTrace()
+            return null
+        } catch (e: InvocationTargetException) {
+            Log.e("java_error", "Get JSON from DB　- InvocationTargetException : Don't use DB query method.(deleteAllBlockmessage$_lang)or(insertBlockmessageB$_lang)")
             e.printStackTrace()
             return null
         } catch (e: Exception) {
@@ -156,8 +228,9 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
         }
 
 
-        // 第2引数に何か入力されていたらここで終了
-        if (2 <= params.size) {
+        //// 音声取得の有無
+        // 第3引数に何か入力されていたらここで終了
+        if (3 <= params.size) {
             return null
         }
 
@@ -165,7 +238,7 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
         /////////////////////////
         //// 音声ファイル取得 ////
         /////////////////////////
-        publishProgress("案内音声取得...")
+        publishProgress(mActivity.getString(R.string.download_in_advance_getVoices))
         try {
             ////////// 音声取得
             // 入出力準備
@@ -173,38 +246,52 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
             var inputStream: DataInputStream
             var outputStream: DataOutputStream
 
+
             // 音声ファイル連続取得
             var cnt = 0 //プログレス表示に使いたいだけ
             for (i in blockmessage.indices) {
-                // サーバに接続
-                Log.d("java_debug", "Get Audio - Start Connection :\t" + blockmessage2[i][6])
-                //url = new URL(server_url + blockmessage[i].wav);
-                url = URL(server_url + blockmessage2[i][6]) //代替案
-                connection = url.openConnection() as HttpURLConnection
 
-                // サーバ上の存在を確認
-                if (blockmessage2[i][6] === "null") {
+                // サーバ上の登録（存在）を確認 --- 2020/03/22(変更)
+                if (blockmessage2[i][6] == null || blockmessage2[i][6] == "" || blockmessage2[i][6] == "null") {
                     //DB上に音声ファイルの登録がなかった
                     Log.d("java_debug", "Skip Get Audio.\t" + blockmessage2[i][1] + " - " + blockmessage2[i][2])
                     continue
                 }
-                if (connection!!.responseCode != HttpURLConnection.HTTP_OK) {
+
+                // サーバに接続
+                Log.d("java_debug", "Get Audio - Start Connection :\t" + blockmessage2[i][6])
+                //url = new URL(server_url + blockmessage[i].wav);  //スマートなやり方
+                connection = serverConnection.serverConnection(blockmessage2[i][6]!!)
+                /* ServerConnectionクラス登場以前の接続方法
+                url = new URL(server_url + blockmessage2[i][6]);    //代替案
+                connection = (HttpURLConnection) url.openConnection();
+                 */if (connection.responseCode != HttpURLConnection.HTTP_OK) {
                     //サーバ上に音声ファイルが見つからなかった場合
                     Log.e("java_error", "Audio Get Error : " + connection.responseCode + "\t" + blockmessage2[i][6])
                     continue
-                    //throw new Exception("Response Status Code : " + connection.getResponseCode());
                 }
                 Log.d("java_debug", "Get Audio - Connected :\t" + blockmessage2[i][6])
 
 
-                // 保存用にファイル名を切り出し
-                //String filename = blockmessage[i].wav.substring(7);  //「message/wm00000_0.wav」がサーバで登録されているため、/の位置から切り出し
-                val filename = blockmessage2[i][6]!!.substring(7) //代替案
+                // 保存用にファイル名を切り出し(message/wm00129_3.mp3) - 2020/03/06(変更)
+                //String filename = blockmessage[i].wav;  //テーブルの定義を使ったスマートに見えるやり方（上手く使えない）
+                val filename = blockmessage2[i][6] //代替案
 
-                // 入出力準備
+                // ディレクトリの確認 --- 2020/03/06 - 2020/03/13(変更)
+                //ファイル名を取得（splitで/の位置で切り分け）
+                val dirs = filename!!.split("/".toRegex()).toTypedArray()
+                //ファイル名を含まないパス(アプリのディレクトリ/message)
+                val dir = params[0] + "/" + dirs[0]
+                val fdir = File(dir)
+                if (!fdir.exists()) {
+                    fdir.mkdir()
+                    Log.d("java_debug", "Make Directory : " + fdir.absolutePath)
+                }
+
+                // 入出力準備 --- 2020/03/13(変更)
                 inputStream = DataInputStream(connection.inputStream)
                 outputStream = DataOutputStream(
-                        BufferedOutputStream(FileOutputStream(params[0] + filename))
+                        BufferedOutputStream(FileOutputStream(params[0] + "/" + blockmessage2[i][6]))
                 )
 
 
@@ -222,7 +309,7 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
                 // 後始末
                 inputStream.close()
                 outputStream.close()
-                publishProgress("案内音声取得...  " + ++cnt + "件")
+                publishProgress(mActivity.getString(R.string.download_in_advance_getVoices) + ++cnt + mActivity.getString(R.string.download_in_advance_unit))
                 Log.d("java_debug", "Get Audio - Complete --------------------------\t$cnt")
             } //for - 音声ファイル連続取得
         } catch (e: MalformedURLException) {
@@ -230,7 +317,7 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
             e.printStackTrace()
             return null
         } catch (e: IOException) {
-            Log.e("java_error", "Get Audio from DB - Failed open connection.")
+            Log.e("java_error", "Get Audio from DB - Failed open connection.(IOException)")
             e.printStackTrace()
             return null
         } catch (e: Exception) {
@@ -245,7 +332,7 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
         return null
     }
 
-    protected override fun onProgressUpdate(vararg params: String?) {
+    override fun onProgressUpdate(vararg params: String?) {
         dialog!!.setMessage(params[0])
         dialog!!.show()
     }
@@ -258,9 +345,4 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
         Log.e("java_error", "Http Get Json is Cancelled.")
         dialog!!.dismiss()
     }
-
-//    override fun doInBackground(vararg p0: String?): Void? {
-//        TODO("Not yet implemented")
-//    }
-
 }

@@ -1,7 +1,28 @@
 <resources>
-    <string name="app_name">Walk And Mobile</string>
+    <string name="app_name">Recognition Braille Blocks</string>
     <string name="img_description2">test0</string>
-    <string name="button_name_app_info">アプリ情報</string>>
-    <string name="alert_dialog_message_for_permission">アプリがこの操作を実行するには次の権限の許可が必要です。\n
-        カメラ\n\n権限を許可するには、[アプリ情報]→[許可]に移動してください。</string>
+
+
+    <!--  対応している言語コード  -->
+    <string-array name="code_language">
+        <item>df</item><!-- デフォルト（端末既定値使用） -->
+        <item>ja</item>
+        <item>en</item>
+    </string-array>
+
+    <!--  事前ダウンロード画面の文  -->
+    <string name="download_in_advance_message">Download guidance information and guidance voices?\nIt can be used when offline.\n(Since the guidance voice has a large capacity, it is recommended to download it in a Wi-Fi environment.)</string>
+    <string name="download_in_advance_pbutton">Get both</string>
+    <string name="download_in_advance_nebutton">Get guidance information only</string>
+    <string name="download_in_advance_nbutton">Cancel</string>
+
+    <string name="download_in_advance_downloading_title">Downloading</string>
+    <string name="download_in_advance_unit">item(s)</string>
+    <string name="download_in_advance_getDB">Getting Database…</string>
+    <string name="download_in_advance_syncDB">Synchronize Database…</string>
+    <string name="download_in_advance_getVoices">Getting Guidance Voices…</string>
+
+    <string name="button_name_app_info">App Info</string>>
+    <string name="alert_dialog_message_for_permission">The following permissions are required for the app to perform this operation.\n
+        Camera\n\nTo grant permissions, go to [App Info] > [Permissions].</string>
 </resources>

@@ -14,6 +14,11 @@ import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.OnNeverAskAgain
 import permissions.dispatcher.OnPermissionDenied
 import permissions.dispatcher.RuntimePermissions
+import java.io.IOException
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.MalformedURLException
+import java.net.URL
 
 @RuntimePermissions
 class PermissionCheckActivity : AppCompatActivity() {
@@ -33,19 +38,19 @@ class PermissionCheckActivity : AppCompatActivity() {
 
     //以下CAMERA
     @NeedsPermission(Manifest.permission.CAMERA)
-    fun showCamera(){
+    fun showCamera() {
         isCameraAllowed = true
         startNextActivity()
     }
 
     @OnPermissionDenied(Manifest.permission.CAMERA)
-    fun onCameraDenied(){
+    fun onCameraDenied() {
         isCameraAllowed = false
         startNextActivity()
     }
 
     @OnNeverAskAgain(Manifest.permission.CAMERA)
-    fun onCaneraNeverAskAgain(){
+    fun onCaneraNeverAskAgain() {
         isCameraAllowed = false
         startNextActivity()
     }
@@ -53,7 +58,6 @@ class PermissionCheckActivity : AppCompatActivity() {
     private fun startNextActivity() {
 
         if (isCameraAllowed) {
-
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()

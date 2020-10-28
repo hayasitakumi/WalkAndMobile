@@ -6,6 +6,7 @@ import android.os.Handler
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.matuilab.walkandmobile.http.HttpGetAudio
+import com.matuilab.walkandmobile.http.HttpGetAudio.Companion.mediaPlayer
 import com.matuilab.walkandmobile.http.HttpGetJson
 import com.matuilab.walkandmobile.http.HttpResponsAsync
 import kotlinx.android.synthetic.main.activity_main.*
@@ -14,7 +15,10 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener
 import org.opencv.android.LoaderCallbackInterface
 import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
+import java.util.*
 
+
+@Suppress("TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
 class MainActivity : AppCompatActivity(), CvCameraViewListener {
     companion object {
         lateinit var Ret: IntArray
@@ -34,6 +38,29 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
 
     var mHandler: Handler? = null
     private var saveAppDir: String? = null
+
+    private var lang: String? = null //言語設定（ja , en） --- 2020/03/06
+    private lateinit var code_lang: Array<String> //対応している言語コードの配列(onCreate()にてvalues/strings.xmlから読み込み) --- 2020/03/06
+
+    var serverConnection: ServerConnection = ServerConnection() // サーバ接続用（ここでは主にURL取得に使用）
+
+    // 言語コードからcode_langの添え字を返す、端末の言語コードが対応しているか調べることも可能 --- 2020/03/06
+    private fun indexOfLanguage(l: String?): Int {
+        // 言語コードの配列にて検索
+        return listOf(code_lang).indexOf(l)
+    }
+
+    // URLとDB用にアンダーバーを付けて返す --- 2020/03/06
+    private fun addressLanguage(l: String): String? {
+        // DBの仕様上、日本語を基準とし、それ以外は名称の後ろに付ける
+        // 日本語用 : テーブルblockdata    英語用 : テーブルblockdata_en
+        return if (l == "ja") {
+            "" //日本語にはアンダーバーなし
+        } else {
+            "_$l"
+        }
+    }
+
     private val mLoaderCallback: BaseLoaderCallback = object : BaseLoaderCallback(this) {
         override fun onManagerConnected(status: Int) {
             when (status) {
@@ -48,19 +75,34 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
         setContentView(R.layout.activity_main)
         mHandler = Handler()
 
+        ////////// 変数の定義 --- 2020/03/06
+        code_lang = resources.getStringArray(R.array.code_language)
+
+        ////////// 言語設定取得（未設定の場合は端末の設定値を使用） --- 2020/03/06
+        // 環境設定 : https://developer.android.com/training/data-storage/shared-preferences?hl=ja
+        // 端末言語 :  https://qiita.com/BlackCat/items/c223bf48c2dbfada0d42
+        lang = Locale.getDefault().language   //端末の設定言語を取得
+        if (indexOfLanguage(lang) <= 0) {
+            // 対応リストに無ければ英語を使用（日本語、英語でもなければ英語を設定）
+            lang = "en"
+        }
+        Log.d("java_debug", "Use Language : $lang")
+
+
         saveAppDir = filesDir.absolutePath
         Log.d("java_debug", "Use Save Dir : $saveAppDir")
 
         //事前ダウンロード
         val getJson = HttpGetJson(this)
+
         AlertDialog.Builder(this)
                 .setTitle("Download in Advance")
-                .setMessage("案内情報と案内音声をダウンロードしますか？\nオフライン時も使用できるようになります。\n（案内音声は容量が大きいためWi-Fi環境でのダウンロードが推奨されます。）")
-                .setPositiveButton("両方取得") { _, _ -> getJson.execute(saveAppDir) }
-                .setNeutralButton("案内情報のみ取得") { _, _ -> //第2引数は空欄以外なんでも良い、何か入っていれば音声は取得しない
-                    getJson.execute(saveAppDir, "FALSE")
+                .setMessage(getString(R.string.download_in_advance_message))
+                .setPositiveButton(getString(R.string.download_in_advance_pbutton)) { _, _ -> getJson.execute(saveAppDir, addressLanguage(lang!!)) }
+                .setNeutralButton(getString(R.string.download_in_advance_nebutton)) { _, _ -> //第3引数は空欄以外なんでも良い、何か入っていれば音声は取得しない
+                    getJson.execute(saveAppDir, addressLanguage(lang!!), "FALSE")
                 }
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(getString(R.string.download_in_advance_nbutton), null)
                 .show()
 
         main_cameraview.setCvCameraViewListener(this)
@@ -84,22 +126,24 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
         mean0 = Ret[3]
 
         if ((Ret[0] >= 1) && (Code > 0) && (Angle >= 0)) {
-            if (!HttpGetAudio.mediaPlayer.isPlaying) {
-                // URL作成
-                val audioFile = String.format("wm%05d_%d.mp3", Code, Angle)
-                val audioUrl = "http://ec2-3-136-168-45.us-east-2.compute.amazonaws.com/tenji/message/$audioFile"
-                // 音声取得再生タスクの実行 ------ 2020/02/02
-                audioTask = HttpGetAudio()
-                audioTask!!.execute(audioUrl, "$saveAppDir/$audioFile") //引数は【音声ファイルのURL】と【音声ファイルの絶対パス】
-            }
             if (Code != CodeSab || Angle != AngleSab) {
                 // 案内文取得
-                val urlSt = "http://ec2-3-136-168-45.us-east-2.compute.amazonaws.com/tenji/get_message.py?"
-                val url = urlSt + "code=" + Code + "&angle=" + Angle
+                val url: String = serverConnection.getMessageUrl(Code, Angle, "normal", lang)
                 val task = HttpResponsAsync(this)
-                task.execute(url, Code.toString(), Angle.toString()) //引数追加 ------ 2020/02/11
-
+                task.execute(url, java.lang.String.valueOf(Code), java.lang.String.valueOf(Angle), addressLanguage(lang!!)) //引数追加 ------ 2020/02/11
             }
+
+            if (!mediaPlayer.isPlaying) {
+                // URL作成
+                val audioFile = String.format("wm%05d_%d.mp3", Code, Angle)
+                val audioUrl: String = serverConnection.getVoiceUrl(addressLanguage(lang!!)).toString() + "/" + audioFile
+                // 保存先パスの作成
+                val savePath = saveAppDir + "/message" + addressLanguage(lang!!) + "/" + audioFile // アプリ専用ディレクトリ/message_en/wm00129_3.mp3
+                // 音声取得再生タスクの実行
+                audioTask = HttpGetAudio()
+                audioTask!!.execute(audioUrl, savePath) //引数は【音声ファイルのURL】と【音声ファイルの絶対パス】
+            }
+
             // 取得コードをCodeSabに入れ、同じコードを取得し続けても通信をしないようにする  ------ 2020/02/01
             CodeSab = Code
             AngleSab = Angle
