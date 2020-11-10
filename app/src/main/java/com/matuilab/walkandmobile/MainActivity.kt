@@ -47,7 +47,8 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
     // 言語コードからcode_langの添え字を返す、端末の言語コードが対応しているか調べることも可能 --- 2020/03/06
     private fun indexOfLanguage(l: String?): Int {
         // 言語コードの配列にて検索
-        return listOf(code_lang).indexOf(l)
+
+        return code_lang.asList().indexOf(l)
     }
 
     // URLとDB用にアンダーバーを付けて返す --- 2020/03/06
@@ -125,7 +126,7 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
         Angle = Ret[2]
         mean0 = Ret[3]
 
-        if ((Ret[0] >= 1) && (Code > 0) && (Angle >= 0)) {
+        if ((Ret[0] >= 0) && (Code > 0) && (Angle >= 0)) {
             if (Code != CodeSab || Angle != AngleSab) {
                 // 案内文取得
                 val url: String = serverConnection.getMessageUrl(Code, Angle, "normal", lang)
