@@ -4,18 +4,25 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView.OnItemClickListener
+import android.widget.ArrayAdapter
+import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import com.matuilab.walkandmobile.http.HttpGetAudio
 import com.matuilab.walkandmobile.http.HttpGetAudio.Companion.mediaPlayer
 import com.matuilab.walkandmobile.http.HttpGetJson
 import com.matuilab.walkandmobile.http.HttpResponsAsync
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.dialog_dia_row.*
+import kotlinx.android.synthetic.main.dialog_download_in_advance.*
 import org.opencv.android.BaseLoaderCallback
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener
 import org.opencv.android.LoaderCallbackInterface
 import org.opencv.android.OpenCVLoader
 import org.opencv.core.Mat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 @Suppress("TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
@@ -76,12 +83,12 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
         setContentView(R.layout.activity_main)
         mHandler = Handler()
 
-        ////////// 変数の定義 --- 2020/03/06
+        ////////// 変数の定義
         code_lang = resources.getStringArray(R.array.code_language)
 
-        ////////// 言語設定取得（未設定の場合は端末の設定値を使用） --- 2020/03/06
+        ////////// 言語設定取得（未設定の場合は端末の設定値を使用）
         // 環境設定 : https://developer.android.com/training/data-storage/shared-preferences?hl=ja
-        // 端末言語 :  https://qiita.com/BlackCat/items/c223bf48c2dbfada0d42
+        // 端末言語 :  https://qiita.com/BlackCat/downloadButtons/c223bf48c2dbfada0d42
         lang = Locale.getDefault().language   //端末の設定言語を取得
         if (indexOfLanguage(lang) <= 0) {
             // 対応リストに無ければ英語を使用（日本語、英語でもなければ英語を設定）
@@ -95,16 +102,58 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
 
         //事前ダウンロード
         val getJson = HttpGetJson(this)
+        
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.download_in_advance_title)
 
-        AlertDialog.Builder(this)
-                .setTitle("Download in Advance")
-                .setMessage(getString(R.string.download_in_advance_message))
-                .setPositiveButton(getString(R.string.download_in_advance_pbutton)) { _, _ -> getJson.execute(saveAppDir, addressLanguage(lang!!)) }
-                .setNeutralButton(getString(R.string.download_in_advance_nebutton)) { _, _ -> //第3引数は空欄以外なんでも良い、何か入っていれば音声は取得しない
+        val listDownloadButtons: MutableList<String> = ArrayList()
+        listDownloadButtons.add(getString(R.string.download_in_advance_pbutton))
+        listDownloadButtons.add(getString(R.string.download_in_advance_nebutton))
+        listDownloadButtons.add(getString(R.string.download_in_advance_nbutton))
+
+        val arrayAdapterButtons = ArrayAdapter(this,
+               R.layout.dialog_dia_row, R.id.dialog_dia_list_item, listDownloadButtons)
+        
+        val content: View = layoutInflater.inflate(R.layout.dialog_download_in_advance, null)
+
+        //this is the ListView that lists your downloadButtons
+        val downloadButtons: ListView = content.findViewById(R.id.dialog_dia_list)
+        downloadButtons.adapter = arrayAdapterButtons
+        builder.setView(content)
+        val dialog = builder.create()
+
+        dialog.show()
+        
+        downloadButtons.onItemClickListener = OnItemClickListener { _, _, position, _ ->
+            //when you need to act on itemClick
+            when (position) {
+                0 -> {
+                    getJson.execute(saveAppDir, addressLanguage(lang!!))
+                }
+                1 -> {
                     getJson.execute(saveAppDir, addressLanguage(lang!!), "FALSE")
                 }
-                .setNegativeButton(getString(R.string.download_in_advance_nbutton), null)
-                .show()
+            }
+            dialog.dismiss()
+        }
+
+
+
+//        val builder = AlertDialog.Builder(this)
+//        builder.setTitle(R.string.download_in_advance_title)
+//                .setMessage(R.string.download_in_advance_message)
+//                .setdownloadButtons(R.array.download_in_advance_button_array
+//                ) { _, id ->
+//                    when (id) {
+//                        0 -> {
+//                            getJson.execute(saveAppDir, addressLanguage(lang!!))
+//                        }
+//                        1 -> {
+//                            getJson.execute(saveAppDir, addressLanguage(lang!!), "FALSE")
+//                        }
+//                    }
+//                }
+//        builder.create().show()
 
         main_cameraview.setCvCameraViewListener(this)
         audioTask = HttpGetAudio()
@@ -130,6 +179,7 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
             if (Code != CodeSab || Angle != AngleSab) {
                 // 案内文取得
                 val url: String = serverConnection.getMessageUrl(Code, Angle, "normal", lang)
+                Log.d("debuginfo", url)
                 val task = HttpResponsAsync(this)
                 task.execute(url, java.lang.String.valueOf(Code), java.lang.String.valueOf(Angle), addressLanguage(lang!!)) //引数追加 ------ 2020/02/11
             }
@@ -168,6 +218,9 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
     override fun onCameraViewStopped() {}
     override fun onResume() {
         super.onResume()
+
+        CodeSab = 0
+        AngleSab = -1
         // 非同期でライブラリの読み込み/初期化を行う
         if (!OpenCVLoader.initDebug()) {
             //Log.d("onResume", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
@@ -180,6 +233,7 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
 
     public override fun onPause() {
         super.onPause()
+
         if (main_cameraview != null) main_cameraview!!.disableView()
     }
 

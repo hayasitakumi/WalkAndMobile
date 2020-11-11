@@ -38,7 +38,7 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
                 .setTitle(mActivity.getString(R.string.download_in_advance_downloading_title)) //ダイアログのタイトル表示
                 .setMessage("...") //ダイアログの本文
                 .setCancelable(false) //勝手に閉じさせないようにする
-                .setNegativeButton(mActivity.getString(R.string.download_in_advance_nbutton)) { dialogInterface, i ->
+                .setNegativeButton(mActivity.getString(R.string.download_in_advance_nbutton)) { _, _ ->
                     // キャンセルボタン押したとき
                     cancel(true)
                 }

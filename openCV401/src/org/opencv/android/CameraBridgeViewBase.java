@@ -11,9 +11,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -412,6 +415,7 @@ public abstract class CameraBridgeViewBase extends SurfaceView implements Surfac
                 canvas.drawColor(0, android.graphics.PorterDuff.Mode.CLEAR);
                 //Rotate canvas
                 canvas.rotate(90f, canvas.getWidth()/2, canvas.getHeight()/2);
+
                 if (BuildConfig.DEBUG)
                     Log.d(TAG, "mStretch value: " + mScale);
 
@@ -493,6 +497,14 @@ public abstract class CameraBridgeViewBase extends SurfaceView implements Surfac
                     calcHeight = (int) height;
                 }
             }
+        }
+
+        if ((calcWidth == 0 || calcHeight == 0) && supportedSizes.size() > 0)
+        {
+            Log.i(TAG, "fallback to the first frame size");
+            Object size = supportedSizes.get(0);
+            calcWidth = accessor.getWidth(size);
+            calcHeight = accessor.getHeight(size);
         }
 
         return new Size(calcWidth, calcHeight);

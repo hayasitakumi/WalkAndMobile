@@ -4,10 +4,17 @@
     <string name="img_description2">test0</string>
 
     <!--  事前ダウンロード画面の文  -->
-    <string name="download_in_advance_message">案内情報と案内音声をダウンロードしますか？\nオフライン時も使用できるようになります。\n（案内音声は容量が大きいためWi-Fi環境でのダウンロードが推奨されます。）</string>
+    <string name="download_in_advance_title">事前ダウンロード</string>
+    <string name="download_in_advance_message">案内文章と案内音声をダウンロードしますか？ダウンロードしておくことでオフライン時でも使用できるようになります。案内音声は容量が大きいためWi-Fi環境でのダウンロードが推奨されます。(約12MB)</string>
     <string name="download_in_advance_pbutton">両方取得</string>
     <string name="download_in_advance_nebutton">案内情報のみ取得</string>
     <string name="download_in_advance_nbutton">キャンセル</string>
+
+    <string-array name="download_in_advance_button_array">
+        <item>両方取得</item>
+        <item>案内情報のみ取得</item>
+        <item>キャンセル</item>
+    </string-array>
 
     <string name="download_in_advance_downloading_title">ダウンロード中</string>
     <string name="download_in_advance_unit">件</string>

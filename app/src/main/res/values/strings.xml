@@ -11,10 +11,17 @@
     </string-array>
 
     <!--  事前ダウンロード画面の文  -->
+    <string name="download_in_advance_title">Download in Advance</string>
     <string name="download_in_advance_message">Download guidance information and guidance voices?\nIt can be used when offline.\n(Since the guidance voice has a large capacity, it is recommended to download it in a Wi-Fi environment.)</string>
     <string name="download_in_advance_pbutton">Get both</string>
-    <string name="download_in_advance_nebutton">Get guidance information only</string>
+    <string name="download_in_advance_nebutton">Get text only</string>
     <string name="download_in_advance_nbutton">Cancel</string>
+
+    <string-array name="download_in_advance_button_array">
+        <item>Get both</item>
+        <item>Get text only</item>
+        <item>Cancel</item>
+    </string-array>
 
     <string name="download_in_advance_downloading_title">Downloading</string>
     <string name="download_in_advance_unit">item(s)</string>
