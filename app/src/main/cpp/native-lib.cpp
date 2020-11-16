@@ -10,6 +10,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/calib3d.hpp>
 #include <opencv2/imgproc.hpp>
+#include <android/log.h>
 
 
 using namespace std;
@@ -1777,7 +1778,9 @@ Java_com_matuilab_walkandmobile_MainActivity_recog(
         jlong imageAddr,
         jintArray  RetObj
 ) {
+
     Mat &image0 = *(Mat *) imageAddr;
+//    __android_log_print(ANDROID_LOG_VERBOSE, "develop_mat", "Hello %d",&image0);
     jint *Ret = env->GetIntArrayElements(RetObj, NULL);
     int tindex = 0;
     int trindex = 0;

@@ -51,7 +51,7 @@ class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
             /* DataInputStream : https://developer.android.com/reference/java/io/DataInputStream?hl=ja */
             val inputStream = DataInputStream(connection.inputStream)
 
-            // ディレクトリの確認 --- 2020/03/06
+            // ディレクトリの確認
             //ファイル名を取得（splitで/の位置で切り分け）
             val dirs: List<String> = params[1]!!.split("/")
             //ファイル名を含まないパスで切り出し（パスparams[1]の頭から、ファイル名の長さを除いた部分）
@@ -122,10 +122,7 @@ class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
         ファイル名の0埋めについて：https://qiita.com/kikkutonton/items/400dcfc343864028800e
          */
 
-        // mediaPlayerをメンバ変数化、複数宣言をできないようにして、再生中なら停止させる
-        //MediaPlayer mediaPlayer = new MediaPlayer();
-
-        // 音声再生中なら動作しない  ------2020/02/02
+        // 音声再生中なら動作しない
         if (mediaPlayer.isPlaying) {
             return
         }

@@ -7,7 +7,7 @@
     <string name="download_in_advance_title">事前ダウンロード</string>
     <string name="download_in_advance_message">案内文章と案内音声をダウンロードしますか？ダウンロードしておくことでオフライン時でも使用できるようになります。案内音声は容量が大きいためWi-Fi環境でのダウンロードが推奨されます。(約12MB)</string>
     <string name="download_in_advance_pbutton">両方取得</string>
-    <string name="download_in_advance_nebutton">案内情報のみ取得</string>
+    <string name="download_in_advance_nebutton">案内文章のみ取得</string>
     <string name="download_in_advance_nbutton">キャンセル</string>
 
     <string-array name="download_in_advance_button_array">
@@ -25,4 +25,8 @@
     <string name="button_name_app_info">アプリ情報</string>>
     <string name="alert_dialog_message_for_permission">アプリがこの操作を実行するには次の権限の許可が必要です。\n
         カメラ\n\n権限を許可するには、[アプリ情報]→[許可]に移動してください。</string>
+
+    <string name="text_main_angletext">アングル</string>
+    <string name="text_main_codetext">コード</string>
+    <string name="button_main_stopaudiobutton">音声停止</string>
 </resources>

@@ -20,20 +20,10 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class HttpResponsAsync(private val mActivity: Activity) : AsyncTask<String?, Void?, String?>() {
-    protected override fun doInBackground(vararg params: String?): String? {
+    override fun doInBackground(vararg params: String?): String? {
         /* 案内文取得
          * 引数：execute( サーバURL , コード , アングル , アンダーバー付き言語コード )
          * */
-
-        ////////////////////
-        ////////// ローカルDBへの登録状況を確認 ------ 2020/02/11 - 2020/03/06(変更)
-        // 言語コード取得
-//        val _lang: String
-//        _lang = if (4 <= params.size) ({
-//            params[3]
-//        })!!.toString() else {
-//            ""
-//        }
 
         val _lang: String = if (4 <= params.size) {
             params[3]!!
@@ -76,14 +66,11 @@ class HttpResponsAsync(private val mActivity: Activity) : AsyncTask<String?, Voi
 
             // DBに案内文があるか確認
             if (message!!.isNotEmpty()) {    //クラッシュ防止
-                Log.d("debug_message", "message is not null")
                 return if (null != message[0]) {
-                    Log.d("debug_message", "message is not null")
                     // あれば終了
                     Log.d("java_debug", """LocalDB 	CODE : ${params[1]}	ANGLE : ${params[2]}${message[0]}""")
                     message[0]
                 } else {
-                    Log.d("debug_message", "message is empty")
                     // ローカルDBに登録なしの場合
                     // 登録がない場合にテキスト表示を維持するには以下を使用する
                     null
@@ -110,7 +97,6 @@ class HttpResponsAsync(private val mActivity: Activity) : AsyncTask<String?, Voi
         try {
 
             val url = URL(params[0])
-            Log.d("debug_message", "$url")
             connection = url.openConnection() as HttpURLConnection
             val `is` = connection.inputStream
             val reader = BufferedReader(InputStreamReader(`is`, "UTF-8"))
