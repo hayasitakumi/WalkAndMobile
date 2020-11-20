@@ -138,7 +138,6 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
         audioTask = HttpGetAudio()
 
         main_stopaudiobutton.setOnClickListener{
-            //TODO 音声停止
             audioStop = false
             //再生終了
             mediaPlayer.stop()
@@ -157,11 +156,14 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
         Code = 0
         Angle = -1
         mean0 = 0
+        Log.d("develop_mat", "inputFrame = $inputFrame , addr = $addr")
         recog(addr, Ret)
         Code = Ret[1]
         Angle = Ret[2]
         mean0 = Ret[3]
 
+//        Log.d("develop_mat", "$Code")
+//
         if ((Ret[0] >= 0) && (Code > 0) && (Angle >= 0)) {
             if (Code != CodeSab || Angle != AngleSab) {
                 // 案内文取得

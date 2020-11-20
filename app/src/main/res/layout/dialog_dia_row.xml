@@ -16,8 +16,7 @@
             android:gravity="center"
             android:padding="8dp"
             android:textSize="18sp"
-            android:textColor="#0645AD"
-            tools:text="TextView"
-            android:textStyle="bold"/>
+            android:textColor="#007AFF"
+            tools:text="TextView"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
