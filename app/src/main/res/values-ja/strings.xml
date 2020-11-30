@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">点字ブロック認識</string>
-    <string name="img_description2">test0</string>
+    <string name="app_name">Walk And Mobile</string>
 
     <!--  事前ダウンロード画面の文  -->
     <string name="download_in_advance_title">事前ダウンロード</string>
-    <string name="download_in_advance_message">案内文章と案内音声をダウンロードしますか？ダウンロードしておくことでオフライン時でも使用できるようになります。案内音声は容量が大きいためWi-Fi環境でのダウンロードが推奨されます。(約12MB)</string>
+    <string name="download_in_advance_message">案内文章と案内音声をダウンロードしますか？
+        ダウンロードしておくことでオフライン時でも使用できるようになります。
+        案内音声は容量が大きいためWi-Fi環境でのダウンロードが推奨されます。(約12MB)
+    </string>
     <string name="download_in_advance_pbutton">両方取得</string>
     <string name="download_in_advance_nebutton">案内文章のみ取得</string>
     <string name="download_in_advance_nbutton">キャンセル</string>
@@ -29,4 +31,12 @@
     <string name="text_main_angletext">アングル</string>
     <string name="text_main_codetext">コード</string>
     <string name="button_main_stopaudiobutton">音声停止</string>
+
+    <string name="drawer_open">Drawer Open</string>
+    <string name="drawer_close">Drawer Close</string>
+
+    <string name="description_launcher_icon">launcher_icon</string>
+
+    <string name="drawer_text_privacy_policy">プライバシーポリシー</string>
+
 </resources>

@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/nav_item_download_in_advance"
+        android:id="@+id/drawer_item_download_in_advance"
         android:title="@string/download_in_advance_title" />
     <item
         android:id="@+id/drawer_item_privacy_policy"

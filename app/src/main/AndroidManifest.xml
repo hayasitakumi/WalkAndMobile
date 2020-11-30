@@ -6,14 +6,19 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:hardwareAccelerated="false"
         android:icon="@mipmap/cbb_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/cbb_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        android:theme="@style/AppTheme"
+
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".PrivacyPolicyActivity"
+            />
+
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait" />

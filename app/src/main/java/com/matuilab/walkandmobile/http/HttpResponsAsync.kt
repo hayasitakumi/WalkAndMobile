@@ -37,13 +37,13 @@ class HttpResponsAsync(private val mActivity: Activity) : AsyncTask<String?, Voi
                 .build()
 
         // 案内文問合せ
-        /* リフレクションを使用して動的にメソッドを呼び出ししようしたが断念（HttpGetJson内のdeleteAllblockmessage()引数無しにてエラー）
+        /** リフレクションを使用して動的にメソッドを呼び出ししようしたが断念（HttpGetJson内のdeleteAllblockmessage()引数無しにてエラー）
            シンプルな説明 : https://m-shige1979.hatenablog.com/entry/2017/02/08/080000
            もう少し詳しく : https://www.atmarkit.co.jp/ait/articles/0512/16/news110.html
            テーブル名やDB操作のメソッド名の末尾にアンダーバー付き言語コードを付けているため多言語対応しやすい
 　 　          Method method = db.daoTenji().getClass().getMethod("getMessage" + _lang, Integer.class, Integer.class, String.class);
  　           message = (String[]) method.invoke(db, Integer.parseInt(params[1]), Integer.parseInt(params[2]), "normal");
-        * */
+        */
         var message: Array<String?>? = null //DB問合せ結果
         try {
             // 使用言語によって分岐（使う登録するテーブルが異なる為）

@@ -1,7 +1,5 @@
 <resources>
-    <string name="app_name">Recognition Braille Blocks</string>
-    <string name="img_description2">test0</string>
-
+    <string name="app_name">Walk And Mobile</string>
 
     <!--  対応している言語コード  -->
     <string-array name="code_language">
@@ -36,4 +34,11 @@
     <string name="text_main_angletext">Angle</string>
     <string name="text_main_codetext">Code</string>
     <string name="button_main_stopaudiobutton">Stop Audio</string>
+
+    <string name="drawer_open">Drawer Open</string>
+    <string name="drawer_close">Drawer Close</string>
+
+    <string name="description_launcher_icon">launcher_icon</string>
+    "
+    <string name="drawer_text_privacy_policy">Privacy Policy</string>
 </resources>

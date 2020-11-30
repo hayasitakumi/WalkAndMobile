@@ -1,134 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_drawerlayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
-<!--    <com.google.android.material.appbar.AppBarLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:theme="@style/AppTheme.AppBarOverlay">-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-<!--        <androidx.appcompat.widget.Toolbar-->
-<!--            android:id="@+id/toolbar"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="?attr/actionBarSize"-->
-<!--            android:background="?attr/colorPrimary"-->
-<!--            app:popupTheme="@style/AppTheme.PopupOverlay" />-->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/main_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/AppTheme"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-<!--    </com.google.android.material.appbar.AppBarLayout>-->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/main_guideline_horizontal0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.6" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/main_guideline_horizontal0"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.6" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/main_guideline_horizontal1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.7" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/main_guideline_horizontal1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.7" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/main_guideline_horizontal2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.9" />
-
-    <FrameLayout
-        android:id="@+id/main_framelayout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/main_guideline_horizontal0"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/main_guideline_horizontal2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.9" />
 
         <org.opencv.android.JavaCameraView
             android:id="@+id/main_cameraview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="visible" />
-    </FrameLayout>
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:layout_marginTop="373dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/main_guideline_horizontal0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/main_toolbar"/>
 
-    <TextView
-        android:id="@+id/main_info"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="10dp"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/main_guideline_horizontal2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/main_guideline_horizontal1" />
+        <TextView
+            android:id="@+id/main_info"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/main_guideline_horizontal2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/main_guideline_horizontal1" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/main_guideline_vertical"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/main_guideline_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <TextView
+            android:id="@+id/main_codetext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:textStyle="bold"
+            android:text="@string/text_main_codetext"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/main_guideline_horizontal0"
+            app:layout_constraintBottom_toBottomOf="@+id/main_guideline_horizontal1"/>
+
+        <TextView
+            android:id="@+id/main_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/main_codetext"
+            app:layout_constraintEnd_toStartOf="@+id/main_guideline_vertical"
+            app:layout_constraintStart_toEndOf="@+id/main_codetext"
+            app:layout_constraintTop_toTopOf="@+id/main_codetext" />
+
+        <TextView
+            android:id="@+id/main_angletext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:textStyle="bold"
+            android:text="@string/text_main_angletext"
+            app:layout_constraintStart_toStartOf="@+id/main_guideline_vertical"
+            app:layout_constraintTop_toTopOf="@+id/main_guideline_horizontal0"
+            app:layout_constraintBottom_toBottomOf="@+id/main_guideline_horizontal1"/>
+
+        <TextView
+            android:id="@+id/main_angle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/main_angletext"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/main_angletext"
+            app:layout_constraintTop_toTopOf="@+id/main_angletext" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/main_stopaudiobutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_main_stopaudiobutton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/main_guideline_horizontal2" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/main_navigationview"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
-
-    <TextView
-        android:id="@+id/main_codetext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:textStyle="bold"
-        android:text="@string/text_main_codetext"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/main_guideline_horizontal0"
-        app:layout_constraintBottom_toBottomOf="@+id/main_guideline_horizontal1"/>
-
-    <TextView
-        android:id="@+id/main_code"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/main_codetext"
-        app:layout_constraintEnd_toStartOf="@+id/main_guideline_vertical"
-        app:layout_constraintStart_toEndOf="@+id/main_codetext"
-        app:layout_constraintTop_toTopOf="@+id/main_codetext" />
-
-    <TextView
-        android:id="@+id/main_angletext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:textStyle="bold"
-        android:text="@string/text_main_angletext"
-        app:layout_constraintStart_toStartOf="@+id/main_guideline_vertical"
-        app:layout_constraintTop_toTopOf="@+id/main_guideline_horizontal0"
-        app:layout_constraintBottom_toBottomOf="@+id/main_guideline_horizontal1"/>
-
-    <TextView
-        android:id="@+id/main_angle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/main_angletext"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/main_angletext"
-        app:layout_constraintTop_toTopOf="@+id/main_angletext" />
-
-    <Button
-        android:id="@+id/main_stopaudiobutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/button_main_stopaudiobutton"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/main_guideline_horizontal2" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/header_main"
+        app:menu="@menu/drawer_main" />
+</androidx.drawerlayout.widget.DrawerLayout>

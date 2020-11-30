@@ -22,7 +22,7 @@ class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
         var returnFile: String? = null
 
         // ファイルがあるか確認、あれば終了
-        val audioFile = File(params[1])
+        val audioFile = File(params[1]!!)
         if (audioFile.exists()) {
             Log.i("java_info", "Found Audio.")
             return params[1]
@@ -111,6 +111,7 @@ class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
 
     override fun onPostExecute(result: String?) {
         // doInBackground後処理
+        Log.d("test_audio", "$result")
         if (result == null) {
             return
         }

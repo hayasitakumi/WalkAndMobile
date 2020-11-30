@@ -3,15 +3,17 @@
 package com.matuilab.walkandmobile.http
 // DB移行に関して
 import android.app.Activity
-import android.app.AlertDialog
 import android.os.AsyncTask
+import android.telecom.Call
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
 import androidx.room.Room
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.matuilab.walkandmobile.R
-import com.matuilab.walkandmobile.ServerConnection
 import com.matuilab.walkandmobile.data.AppDatabase
 import com.matuilab.walkandmobile.data.AppDatabase.Companion.MIGRATION_1_2
 import com.matuilab.walkandmobile.data.model.Blockmessage
+import com.matuilab.walkandmobile.util.ServerConnection
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
@@ -19,22 +21,26 @@ import java.lang.reflect.InvocationTargetException
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
+import javax.security.auth.callback.Callback
+
 
 /*
 * Roomについての解説 : https://tech.recruit-mp.co.jp/mobile/post-12311/
 * */
-class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?, Void?>() {
+class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?, String?>() {
     // サーバ接続用クラス
     private var serverConnection: ServerConnection = ServerConnection()
 
-    // サーバURLの取得（URLの変更はServerConnection.javaにて行います） --- 2020/03/06
+    // サーバURLの取得（URLの変更はServerConnection.javaにて行います）
     private val server_url: String = serverConnection.serverUrl
 
     // プログレスダイアログ(本当はプログレスバーが良い）
     private var dialog: AlertDialog? = null
+
+    private var callbacktask: CallBackTask? = null
     override fun onPreExecute() {
         // 進捗表示の為にダイアログを用意
-        dialog = AlertDialog.Builder(mActivity)
+        dialog = MaterialAlertDialogBuilder(mActivity)
                 .setTitle(mActivity.getString(R.string.download_in_advance_downloading_title)) //ダイアログのタイトル表示
                 .setMessage("...") //ダイアログの本文
                 .setCancelable(false) //勝手に閉じさせないようにする
@@ -45,7 +51,7 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
                 .show() //表示実行
     }
 
-    override fun doInBackground(vararg params: String?): Void? {
+    override fun doInBackground(vararg params: String?): String? {
         /** 音声ファイルの保存を行いたいので、引数は getFilesDir().getAbsolutePath() をください
          * 引数0 : アプリ専用のディレクトリgetFilesDir().getAbsolutePath()（音声ファイル保存先パス）
          * 引数1 : アンダーバー付き言語コード
@@ -57,10 +63,11 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
          * ◆音声ファイル取得
          * 　・音声取得
          */
+        val result: String? = null
         val _lang = params[1] //アンダーバー付き言語コード
         var connection: HttpURLConnection? = null
         val sb = StringBuilder()
-        val blockmessage: Array<Blockmessage?> //音声取得でも使うので大域宣言
+//        val blockmessage: Array<Blockmessage?> //音声取得でも使うので大域宣言
         val blockmessage2: Array<Array<String?>> //DBのデータ格納用（上の変数に入れようとすると例外発動、仕方ないのでこれ）
 
         /////////////////////////
@@ -72,13 +79,6 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
 
             // データ取得サブシステムへ接続 - 2020/03/06(追加)
             connection = serverConnection.db2json_lang("blockmessage", _lang!!)
-
-            /* ServerConnectionクラス登場以前の接続方法
-            // URLを指定
-            URL url = new URL(server_url+"get_db2json.py?data=blockmessage"+_lang);
-            // 指定URLに接続
-            connection = (HttpURLConnection) url.openConnection();
-             */
 
             // 接続結果（レスポンスステータスコード）を確認
             val statusCode = connection.responseCode
@@ -103,7 +103,7 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
             var jsonObject: JSONObject
 
             // DB更新用にblockmessageの型を量産、後に当てはめていく
-            blockmessage = arrayOfNulls<Blockmessage>(jsonArray.length())
+//            blockmessage = arrayOfNulls<Blockmessage>(jsonArray.length())
             blockmessage2 = Array(jsonArray.length()) { arrayOfNulls(7) } //代替案
 
             // 配列を一つずつ取り出し（DB登録前の下準備）
@@ -146,81 +146,85 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
                     .build()
 
             // 使用言語によって分岐（使う登録するテーブルが異なる為）
-            if (_lang == "") {
-                ////////// 日本語
-                // レコード全削除
-                db.daoTenji().deleteAllBlockmessage()
-                /* 【エラーにより使用不可】動的呼び出し（リフレクション）による実行、各メソッド名の後ろにアンダーバー付き言語コードを付けているため
-                Method method = db.daoTenji().getClass().getMethod("deleteAllBlockmessage"+_lang, String.class);    //動的呼び出しの準備
-                method.invoke(db, new String("%"));
-                 */
-
-                // レコード追加
-                //db.daoTenji().insertBlockmessage(blockmessage);
-                for (i in blockmessage2.indices) {    //代替案
-                    db.daoTenji().insertBlockmessageB(blockmessage2[i][0]!!.toInt(), blockmessage2[i][1]!!.toInt(), blockmessage2[i][2]!!.toInt(),
-                            blockmessage2[i][3],
-                            blockmessage2[i][4],
-                            blockmessage2[i][5],
-                            blockmessage2[i][6]
-                    )
+            when (_lang) {
+                "" -> {
+                    ////////// 日本語
+                    // レコード全削除
+                    db.daoTenji().deleteAllBlockmessage()
                     /* 【エラーにより使用不可】動的呼び出し（リフレクション）による実行、各メソッド名の後ろにアンダーバー付き言語コードを付けているため
-                method = db.daoTenji().getClass().getMethod( "insertBlockmessageB", Integer.class, Integer.class, Integer.class, String.class, String.class, String.class, String.class );    //動的呼び出しの準備
-                method.invoke(db,
-                        Integer.parseInt(blockmessage2[i][0]),
-                        Integer.parseInt(blockmessage2[i][1]),
-                        Integer.parseInt(blockmessage2[i][2]),
-                        blockmessage2[i][3],
-                        blockmessage2[i][4],
-                        blockmessage2[i][5],
-                        blockmessage2[i][6]);
-                */
-                    // 進捗状況表示
-                    publishProgress(mActivity.getString(R.string.download_in_advance_syncDB) + (i + 1) + mActivity.getString(R.string.download_in_advance_unit))
-                } //for - INSERTの代替案
-            } else if (_lang == "_en") {
-                ////////// 英語
-                // レコード全削除
-                db.daoTenji().deleteAllBlockmessage_en()
-                // レコード追加
-                for (i in blockmessage2.indices) {    //代替案
-                    db.daoTenji().insertBlockmessageB_en(blockmessage2[i][0]!!.toInt(), blockmessage2[i][1]!!.toInt(), blockmessage2[i][2]!!.toInt(),
+                    Method method = db.daoTenji().getClass().getMethod("deleteAllBlockmessage"+_lang, String.class);    //動的呼び出しの準備
+                    method.invoke(db, new String("%"));
+                     */
+
+                    // レコード追加
+                    //db.daoTenji().insertBlockmessage(blockmessage);
+                    for (i in blockmessage2.indices) {    //代替案
+                        db.daoTenji().insertBlockmessageB(blockmessage2[i][0]!!.toInt(), blockmessage2[i][1]!!.toInt(), blockmessage2[i][2]!!.toInt(),
+                                blockmessage2[i][3],
+                                blockmessage2[i][4],
+                                blockmessage2[i][5],
+                                blockmessage2[i][6]
+                        )
+                        /* 【エラーにより使用不可】動的呼び出し（リフレクション）による実行、各メソッド名の後ろにアンダーバー付き言語コードを付けているため
+                    method = db.daoTenji().getClass().getMethod( "insertBlockmessageB", Integer.class, Integer.class, Integer.class, String.class, String.class, String.class, String.class );    //動的呼び出しの準備
+                    method.invoke(db,
+                            Integer.parseInt(blockmessage2[i][0]),
+                            Integer.parseInt(blockmessage2[i][1]),
+                            Integer.parseInt(blockmessage2[i][2]),
                             blockmessage2[i][3],
                             blockmessage2[i][4],
                             blockmessage2[i][5],
-                            blockmessage2[i][6]
-                    )
-                    // 進捗状況表示
-                    publishProgress(mActivity.getString(R.string.download_in_advance_syncDB) + (i + 1) + mActivity.getString(R.string.download_in_advance_unit))
-                } //for - INSERTの代替案
-            } else {
-                // 未知の言語
-                throw Exception("Selected unknown language code : $_lang")
+                            blockmessage2[i][6]);
+                    */
+                        // 進捗状況表示
+                        publishProgress(mActivity.getString(R.string.download_in_advance_syncDB) + (i + 1) + mActivity.getString(R.string.download_in_advance_unit))
+                    } //for - INSERTの代替案
+                }
+                "_en" -> {
+                    ////////// 英語
+                    // レコード全削除
+                    db.daoTenji().deleteAllBlockmessage_en()
+                    // レコード追加
+                    for (i in blockmessage2.indices) {    //代替案
+                        db.daoTenji().insertBlockmessageB_en(blockmessage2[i][0]!!.toInt(), blockmessage2[i][1]!!.toInt(), blockmessage2[i][2]!!.toInt(),
+                                blockmessage2[i][3],
+                                blockmessage2[i][4],
+                                blockmessage2[i][5],
+                                blockmessage2[i][6]
+                        )
+                        // 進捗状況表示
+                        publishProgress(mActivity.getString(R.string.download_in_advance_syncDB) + (i + 1) + mActivity.getString(R.string.download_in_advance_unit))
+                    } //for - INSERTの代替案
+                }
+                else -> {
+                    // 未知の言語
+                    throw Exception("Selected unknown language code : $_lang")
+                }
             }
         } catch (e: MalformedURLException) {
             Log.e("java_error", "Get JSON from DB - Malformed URL.")
             e.printStackTrace()
-            return null
+            return result
         } catch (e: IOException) {
             Log.e("java_error", "Get JSON from DB - Failed open connection.")
             e.printStackTrace()
-            return null
+            return result
         } catch (e: NoSuchMethodException) {
             Log.e("java_error", "Get JSON from DB　- NoSuchMethodException : notFound DB query method.(deleteAllBlockmessage$_lang)or(insertBlockmessageB$_lang)")
             e.printStackTrace()
-            return null
+            return result
         } catch (e: IllegalAccessException) {
             Log.e("java_error", "Get JSON from DB　- IllegalAccessException : Failed use DB query method.(deleteAllBlockmessage$_lang)or(insertBlockmessageB$_lang)")
             e.printStackTrace()
-            return null
+            return result
         } catch (e: InvocationTargetException) {
             Log.e("java_error", "Get JSON from DB　- InvocationTargetException : Don't use DB query method.(deleteAllBlockmessage$_lang)or(insertBlockmessageB$_lang)")
             e.printStackTrace()
-            return null
+            return result
         } catch (e: Exception) {
             Log.e("java_error", "Get JSON from DB - " + e.message)
             e.printStackTrace()
-            return null
+            return result
         } finally {
             // 後始末
             Log.d("java_debug", "End of getting JSON.")
@@ -231,7 +235,7 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
         //// 音声取得の有無
         // 第3引数に何か入力されていたらここで終了
         if (3 <= params.size) {
-            return null
+            return result
         }
 
 
@@ -249,7 +253,7 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
 
             // 音声ファイル連続取得
             var cnt = 0 //プログレス表示に使いたいだけ
-            for (i in blockmessage.indices) {
+            for (i in blockmessage2.indices) {
 
                 // サーバ上の登録（存在）を確認 --- 2020/03/22(変更)
                 if (blockmessage2[i][6] == null || blockmessage2[i][6] == "" || blockmessage2[i][6] == "null") {
@@ -315,21 +319,21 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
         } catch (e: MalformedURLException) {
             Log.e("java_error", "Get Audio from DB - Malformed URL.")
             e.printStackTrace()
-            return null
+            return result
         } catch (e: IOException) {
             Log.e("java_error", "Get Audio from DB - Failed open connection.(IOException)")
             e.printStackTrace()
-            return null
+            return result
         } catch (e: Exception) {
             Log.e("java_error", "Get Audio from DB - " + e.message)
             e.printStackTrace()
-            return null
+            return result
         } finally {
             // 後始末
             Log.d("java_debug", "End of getting Audio.")
             connection.disconnect()
         }
-        return null
+        return result
     }
 
     override fun onProgressUpdate(vararg params: String?) {
@@ -337,12 +341,25 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
         dialog!!.show()
     }
 
-    override fun onPostExecute(tmp: Void?) {
+    override fun onPostExecute(result: String?) {
         dialog!!.dismiss()
+        callbacktask?.let {
+            it.CallBack(result)
+        }
     }
 
     override fun onCancelled() {
         Log.e("java_error", "Http Get Json is Cancelled.")
         dialog!!.dismiss()
+    }
+
+    fun setOnCallBack(_cbj: CallBackTask) {
+        callbacktask = _cbj
+    }
+
+    open class CallBackTask {
+        open fun CallBack(result: String?) {
+
+        }
     }
 }
