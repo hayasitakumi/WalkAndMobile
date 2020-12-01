@@ -121,9 +121,9 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
         main_navigationview.setNavigationItemSelectedListener {
             when (it.itemId) {
                 /** 再生速度 */
-                R.id.drawer_item_playback_speed -> {
-
-                }
+//                R.id.drawer_item_playback_speed -> {
+//
+//                }
 
                 /** 事前ダウンロードボタン */
                 R.id.drawer_item_download_in_advance -> {
