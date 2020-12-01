@@ -72,6 +72,8 @@ dependencies {
     kapt "com.github.hotchemi:permissionsdispatcher-processor:3.3.1"
 
     implementation 'com.joanzapata.pdfview:android-pdfview:1.0.4@aar'
+
+    implementation 'androidx.preference:preference-ktx:1.1.1'
 }
 repositories {
     mavenCentral()

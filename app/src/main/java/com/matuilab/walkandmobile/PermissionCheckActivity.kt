@@ -1,7 +1,6 @@
 package com.matuilab.walkandmobile
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,7 +10,6 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.matuilab.walkandmobile.http.HttpGetJson
@@ -22,7 +20,6 @@ import permissions.dispatcher.OnNeverAskAgain
 import permissions.dispatcher.OnPermissionDenied
 import permissions.dispatcher.RuntimePermissions
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 @RuntimePermissions
@@ -31,13 +28,8 @@ class PermissionCheckActivity : AppCompatActivity() {
     private var isCameraAllowed = false
     private val REQEST_CODE_MAGIC = 1212
 
-//    private var localLang: String? = null //言語設定（ja , en）
-//    lateinit var languageProcessor: LanguageProcessor
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-
+    override fun onStart() {
+        super.onStart()
 
         showCameraWithPermissionCheck()
     }
@@ -94,24 +86,24 @@ class PermissionCheckActivity : AppCompatActivity() {
                 }
             })
 
-            val listDownloadButtons: MutableList<String> = ArrayList()
-            listDownloadButtons.add(getString(R.string.download_in_advance_pbutton))
-            listDownloadButtons.add(getString(R.string.download_in_advance_nebutton))
-            listDownloadButtons.add(getString(R.string.download_in_advance_nbutton))
+            val listDownloadButtons: MutableList<String> = mutableListOf(
+                    getString(R.string.download_in_advance_pbutton),
+                    getString(R.string.download_in_advance_nebutton),
+                    getString(R.string.download_in_advance_nbutton))
 
             val arrayAdapterButtons = ArrayAdapter(this,
-                    R.layout.dialog_dia_row, R.id.dialog_dia_list_item, listDownloadButtons)
+                    R.layout.dialog_download_in_advance_row, R.id.dialog_download_in_advance_list_item, listDownloadButtons)
 
             val content: View = layoutInflater.inflate(R.layout.dialog_download_in_advance, null)
 
             //this is the ListView that lists your downloadButtons
-            val downloadButtons: ListView = content.findViewById(R.id.dialog_dia_list)
+            val downloadButtons: ListView = content.findViewById(R.id.dialog_download_in_advance_list)
             downloadButtons.adapter = arrayAdapterButtons
 
             val builder = MaterialAlertDialogBuilder(this).setOnCancelListener {
                 startActivity(intent)
                 finish()
-            }.setTitle(R.string.download_in_advance_title).setView(content)
+            }.setTitle(R.string.download_in_advance_title).setMessage(R.string.download_in_advance_message).setView(content)
             val dialog = builder.create()
 
             dialog.show()
@@ -135,8 +127,6 @@ class PermissionCheckActivity : AppCompatActivity() {
         } else {
 
             if (!isCameraAllowed)
-                Log.d("CAM", "No")
-
             MaterialAlertDialogBuilder(this)
                     .setPositiveButton(android.R.string.cancel) { _, _ ->
                         finish()

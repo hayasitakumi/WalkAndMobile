@@ -38,7 +38,11 @@
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Close</string>
 
-    <string name="description_launcher_icon">launcher_icon</string>
-    "
+    <string name="description_launcher_icon">Launcher Icon</string>
+
+    <string name="drawer_text_download_in_advance">Download in Advance</string>
     <string name="drawer_text_privacy_policy">Privacy Policy</string>
+    <string name="drawer_text_settings">Settings</string>
+
+    <string name="drawer_text_playback_speed">Playback speed</string>
 </resources>

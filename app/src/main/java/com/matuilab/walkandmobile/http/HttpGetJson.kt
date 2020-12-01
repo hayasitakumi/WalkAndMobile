@@ -31,9 +31,6 @@ class HttpGetJson(private val mActivity: Activity) : AsyncTask<String?, String?,
     // サーバ接続用クラス
     private var serverConnection: ServerConnection = ServerConnection()
 
-    // サーバURLの取得（URLの変更はServerConnection.javaにて行います）
-    private val server_url: String = serverConnection.serverUrl
-
     // プログレスダイアログ(本当はプログレスバーが良い）
     private var dialog: AlertDialog? = null
 

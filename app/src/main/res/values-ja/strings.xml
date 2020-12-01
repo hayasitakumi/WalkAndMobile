@@ -37,6 +37,9 @@
 
     <string name="description_launcher_icon">launcher_icon</string>
 
+    <string name="drawer_text_download_in_advance">事前ダウンロード</string>
     <string name="drawer_text_privacy_policy">プライバシーポリシー</string>
+    <string name="drawer_text_settings">設定</string>
 
+    <string name="drawer_text_playback_speed">再生速度</string>
 </resources>

@@ -6,20 +6,8 @@
     android:orientation="vertical"
     android:padding="3dp">
 
-    <TextView
-        android:id="@+id/dialog_dia_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingTop="15dp"
-        android:text="@string/download_in_advance_message"
-        android:textAppearance="?android:attr/textAppearanceListItem"
-        android:textColor="@android:color/black"
-        android:textSize="18sp" />
-
     <ListView
-        android:id="@+id/dialog_dia_list"
+        android:id="@+id/dialog_download_in_advance_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:divider="@null" />
+        android:layout_height="wrap_content"/>
 </LinearLayout>

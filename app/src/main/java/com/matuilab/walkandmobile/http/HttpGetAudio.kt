@@ -1,12 +1,14 @@
 package com.matuilab.walkandmobile.http
 
 import android.media.MediaPlayer
+import android.media.PlaybackParams
 import android.os.AsyncTask
 import android.util.Log
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
+
 
 /* 音声案内を取得するためのクラス
    execute()の引数は、execute( URL全体 , ファイル名含むパス , 言語 )
@@ -128,20 +130,21 @@ class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
             return
         }
         try {
-            // URLからロード
-            mediaPlayer.setDataSource(result)
-            // 音声データのロード（プリペアとは？、要調査）
-            mediaPlayer.prepare()
-            // 停止後のリスナ定義（これも丸写し、要調査）
-            mediaPlayer.setOnCompletionListener { mediaPlayer ->
-                Log.d("java_debug", "end of audio")
-                // 以下、止めて、シークリセット、解放、変数初期化
-                mediaPlayer.stop()
-                mediaPlayer.reset()
-                //mediaPlayer.release();    //release()までやってしまうと、次にsetDataSource()ができなくなる（公式ドキュメントMediaPlayerを参照）
+            val params: PlaybackParams = PlaybackParams()
+            mediaPlayer.apply {
+                setDataSource(result)
+                // 一時的な速度変更(https://qiita.com/wa2c/items/8eb9d02ad1ce9a17ced8)
+                playbackParams = params.setSpeed(1.0001f)
+                prepare()
+                setOnCompletionListener {
+                    Log.d("java_debug", "end of audio")
+                    it.stop()
+                    it.reset()
+                    //mediaPlayer.release();    //release()までやってしまうと、次にsetDataSource()ができなくなる（公式ドキュメントMediaPlayerを参照）
+                }
+                start()
+                playbackParams = params.setSpeed(3.0f)
             }
-            // 再生!!
-            mediaPlayer.start()
         } catch (e: IOException) {
             // 以下、setDataSource()使用時に必要な例外処理
             e.printStackTrace()

@@ -1,19 +1,18 @@
 package com.matuilab.walkandmobile
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.matuilab.walkandmobile.PrivacyPolicyActivity
 import com.matuilab.walkandmobile.http.HttpGetAudio
 import com.matuilab.walkandmobile.http.HttpGetAudio.Companion.mediaPlayer
 import com.matuilab.walkandmobile.http.HttpGetJson
@@ -45,6 +44,7 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
         init {
             System.loadLibrary("native-lib")
         }
+
     }
 
     var mHandler: Handler? = null
@@ -67,11 +67,15 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        mHandler = Handler()
 
-        ////////// 変数の定義
+        /** 変数の定義 */
         languageProcessor = LanguageProcessor(resources.getStringArray(R.array.code_language))
-
+        mHandler = Handler()
+//        val getPreferences = getSharedPreferences("pref", MODE_PRIVATE)
+//
+//        val str = getPreferences.getString("test", "") //	キー、デフォールト値
+//
+//        Log.d("checkeditem", "pref:$str")
 
         /** 言語設定取得（未設定の場合は端末の設定値を使用）*/
         // 環境設定 : https://developer.android.com/training/data-storage/shared-preferences?hl=ja
@@ -97,10 +101,6 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
 
         /**Toolbarの設定*/
         setSupportActionBar(main_toolbar)
-//        val actionBar: android.app.ActionBar? = actionBar
-//        actionBar!!.setDisplayHomeAsUpEnabled(true)
-//        supportActionBar!!.setDisplayShowHomeEnabled(true)
-//        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
             it.setHomeButtonEnabled(true)
@@ -113,15 +113,24 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
                 R.string.drawer_close)
         main_drawerlayout!!.addDrawerListener(toggle)
         toggle.syncState()
+
+        /** Preferenceの設定 */
+        val setPreferences: SharedPreferences = getPreferences(MODE_PRIVATE)
+        val editor: SharedPreferences.Editor = setPreferences.edit()
+
         main_navigationview.setNavigationItemSelectedListener {
             when (it.itemId) {
+                /** 再生速度 */
+                R.id.drawer_item_playback_speed -> {
 
+                }
+
+                /** 事前ダウンロードボタン */
                 R.id.drawer_item_download_in_advance -> {
                     if (languageProcessor.indexOfLanguage(localLang) <= 0) {
                         // 対応リストに無ければ英語を使用（日本語、英語でもなければ英語を設定）
                         localLang = "en"
                     }
-
                     /**事前ダウンロードのダイアログ*/
                     val getJson = HttpGetJson(this)
 
@@ -129,17 +138,14 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
                             getString(R.string.download_in_advance_pbutton),
                             getString(R.string.download_in_advance_nebutton),
                             getString(R.string.download_in_advance_nbutton))
-//                    listDownloadButtons.add(getString(R.string.download_in_advance_pbutton))
-//                    listDownloadButtons.add(getString(R.string.download_in_advance_nebutton))
-//                    listDownloadButtons.add(getString(R.string.download_in_advance_nbutton))
 
                     val arrayAdapterButtons = ArrayAdapter(this,
-                            R.layout.dialog_dia_row, R.id.dialog_dia_list_item, listDownloadButtons)
+                            R.layout.dialog_download_in_advance_row, R.id.dialog_download_in_advance_list_item, listDownloadButtons)
 
                     val content: View = layoutInflater.inflate(R.layout.dialog_download_in_advance, null)
 
                     //this is the ListView that lists your downloadButtons
-                    val downloadButtons: ListView = content.findViewById(R.id.dialog_dia_list)
+                    val downloadButtons: ListView = content.findViewById(R.id.dialog_download_in_advance_list)
                     downloadButtons.adapter = arrayAdapterButtons
 
 
@@ -166,8 +172,8 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
                     }
                 }
 
-                R.id.drawer_item_privacy_policy
-                -> {
+                /** プライバシーポリシーボタン */
+                R.id.drawer_item_privacy_policy -> {
                     val intent = Intent(this, PrivacyPolicyActivity::class.java)
                     startActivity(intent)
                     finish()
@@ -222,13 +228,8 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
         mHandler!!.post(Runnable
         //run()の中の処理はメインスレッドで動作されます。
         {
-            if (Code == 0) {
-                main_code.text = "0"
-                main_angle.text = "-1"
-            } else {
-                main_code.text = Code.toString()
-                main_angle.text = Angle.toString()
-            }
+            main_code.text = Code.toString()
+            main_angle.text = Angle.toString()
         })
         return inputFrame
     }

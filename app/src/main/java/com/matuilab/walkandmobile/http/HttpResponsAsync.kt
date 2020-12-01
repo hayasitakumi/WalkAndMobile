@@ -4,11 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.AsyncTask
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.room.Room
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.matuilab.walkandmobile.MainActivity
+import com.matuilab.walkandmobile.MainActivity.Companion.AngleSab
+import com.matuilab.walkandmobile.MainActivity.Companion.CodeSab
 import com.matuilab.walkandmobile.R
 import com.matuilab.walkandmobile.data.AppDatabase
 import com.matuilab.walkandmobile.data.AppDatabase.Companion.MIGRATION_1_2
@@ -112,12 +117,25 @@ class HttpResponsAsync(private val mActivity: Activity) : AsyncTask<String?, Voi
     }
 
     override fun onPostExecute(result: String?) {
-
         // doInBackground後処理
         if (result != null) {
             if (result.take(4) == "http") {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(result))
-                startActivity(mActivity, intent, null)
+                //URL遷移
+                MaterialAlertDialogBuilder(mActivity)
+                        .setMessage("${result}に移動しますか？")
+                        .setPositiveButton(android.R.string.yes) { _, _ ->
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(result))
+                            startActivity(mActivity, intent, null)
+                        }
+                        .setNegativeButton(android.R.string.no) { _, _ ->
+                            CodeSab = 0
+                            AngleSab = -1
+                        }
+                        .setOnCancelListener {
+                            CodeSab = 0
+                            AngleSab = -1
+                        }
+                        .show()
             }
             // 表示内容が存在する場合（案内情報を取得できた、nullでない）
             (mActivity.findViewById<View>(R.id.main_info) as TextView).text = result

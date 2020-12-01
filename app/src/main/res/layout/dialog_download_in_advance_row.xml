@@ -10,7 +10,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/dialog_dia_list_item"
+            android:id="@+id/dialog_download_in_advance_list_item"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
