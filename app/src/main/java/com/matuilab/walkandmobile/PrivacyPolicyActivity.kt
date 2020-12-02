@@ -20,10 +20,6 @@ class PrivacyPolicyActivity : AppCompatActivity() {
                 .load()
 
         setSupportActionBar(privacy_policy_toolbar)
-//        val actionBar: android.app.ActionBar? = actionBar
-//        actionBar!!.setDisplayHomeAsUpEnabled(true)
-//        supportActionBar!!.setDisplayShowHomeEnabled(true)
-//        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
             it.setHomeButtonEnabled(true)

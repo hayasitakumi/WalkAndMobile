@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
 //                }
 
                 /** 事前ダウンロードボタン */
-                R.id.drawer_item_download_in_advance -> {
+                R.id.nav_download_in_advance -> {
                     if (languageProcessor.indexOfLanguage(localLang) <= 0) {
                         // 対応リストに無ければ英語を使用（日本語、英語でもなければ英語を設定）
                         localLang = "en"
@@ -173,7 +173,7 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
                 }
 
                 /** プライバシーポリシーボタン */
-                R.id.drawer_item_privacy_policy -> {
+                R.id.nav_privacy_policy -> {
                     val intent = Intent(this, PrivacyPolicyActivity::class.java)
                     startActivity(intent)
                     finish()

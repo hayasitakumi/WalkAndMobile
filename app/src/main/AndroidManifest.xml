@@ -13,22 +13,30 @@
         android:roundIcon="@mipmap/cbb_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".PrivacyPolicyActivity"
-            />
-
-        <activity
-            android:name=".MainActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name=".PermissionCheckActivity">
+            android:name=".FirstActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+<!--        <activity android:name=".PrivacyPolicyActivity" />-->
+<!--        <activity-->
+<!--            android:name=".MainActivity"-->
+<!--            android:screenOrientation="portrait" />-->
+<!--        <activity android:name=".PermissionCheckActivity">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
     </application>
 
 </manifest>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_settings"
+            android:title="@string/drawer_text_settings" />
+
+        <item
+            android:id="@+id/nav_download_in_advance"
+            android:title="@string/drawer_text_download_in_advance" />
+        <item
+            android:id="@+id/nav_privacy_policy"
+            android:title="@string/drawer_text_privacy_policy" />
+    </group>
+</menu>

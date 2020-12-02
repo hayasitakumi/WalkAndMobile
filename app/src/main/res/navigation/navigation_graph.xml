@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/permission_check_navigation">
+
+    <fragment
+        android:id="@+id/permission_check_navigation"
+        android:name="com.matuilab.walkandmobile.PermissionCheckFragment"
+        android:label="fragment_permission_check"
+        tools:layout="@layout/fragment_permission_check" >
+        <action
+            android:id="@+id/action_permission_check_to_camera"
+            app:destination="@id/camera_navigation"
+            app:launchSingleTop="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/camera_navigation"
+        android:name="com.matuilab.walkandmobile.CameraFragment"
+        android:label="fragment_camera"
+        tools:layout="@layout/app_bar_main" >
+        <action
+            android:id="@+id/action_camera_to_privacy_policy"
+            app:destination="@id/privacy_policy_navigation" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/privacy_policy_navigation"
+        android:name="com.matuilab.walkandmobile.PrivacyPolicyFragment"
+        android:label="fragment_third"
+        tools:layout="@layout/fragment_privacy_policy">
+        <action
+            android:id="@+id/action_privacy_policy_to_camera"
+            app:destination="@id/camera_navigation" />
+    </fragment>
+
+</navigation>
