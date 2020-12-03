@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.room.Room
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.matuilab.walkandmobile.MainActivity
 import com.matuilab.walkandmobile.MainActivity.Companion.AngleSab
 import com.matuilab.walkandmobile.MainActivity.Companion.CodeSab
 import com.matuilab.walkandmobile.R
@@ -138,7 +137,7 @@ class HttpResponsAsync(private val mActivity: Activity) : AsyncTask<String?, Voi
                         .show()
             }
             // 表示内容が存在する場合（案内情報を取得できた、nullでない）
-            (mActivity.findViewById<View>(R.id.main_info) as TextView).text = result
+            (mActivity.findViewById<View>(R.id.camera_info) as TextView?)!!.text = result
         }
     }
 }

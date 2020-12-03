@@ -27,30 +27,22 @@ class FirstActivity : AppCompatActivity() {
         setContentView(R.layout.activity_first)
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
-//        toolbar.setNavigationOnClickListener {
-//            Toast.makeText(applicationContext, "your icon was clicked", Toast.LENGTH_SHORT).show()
-//        }
         setSupportActionBar(toolbar)
-//        supportActionBar?.let {
-//            it.setDisplayHomeAsUpEnabled(true)
-//            it.setHomeButtonEnabled(true)
-//        } ?: IllegalAccessException("Toolbar cannot be null")
 
         // sync drawer
-        // sync drawer
-        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+//        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val actionBarDrawerToggle = ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close)
-        drawerLayout.addDrawerListener(actionBarDrawerToggle)
+                this, drawer_layout, toolbar, R.string.drawer_open, R.string.drawer_close)
+        drawer_layout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
 
         /**NavigationDrawerの設定*/
-        val toggle = ActionBarDrawerToggle(
-                this, drawer_layout, toolbar,
-                R.string.drawer_open,
-                R.string.drawer_close)
-        drawer_layout!!.addDrawerListener(toggle)
-        toggle.syncState()
+//        val toggle = ActionBarDrawerToggle(
+//                this, drawer_layout, toolbar,
+//                R.string.drawer_open,
+//                R.string.drawer_close)
+//        drawer_layout!!.addDrawerListener(toggle)
+//        toggle.syncState()
 
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
@@ -58,9 +50,6 @@ class FirstActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(setOf(R.id.permission_check_navigation, R.id.camera_navigation))
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-//        findViewById<Toolbar>(R.id.toolbar)
-//                .setupWithNavController(navController, appBarConfiguration)
-
 
         // set navigation
 //        nav_view.setNavigationItemSelectedListener {
