@@ -31,9 +31,9 @@
     <string name="alert_dialog_message_for_permission">The following permissions are required for the app to perform this operation.\n
         Camera\n\nTo grant permissions, go to [App Info] > [Permissions].</string>
 
-    <string name="text_main_angletext">Angle</string>
-    <string name="text_main_codetext">Code</string>
-    <string name="button_main_stopaudiobutton">Stop Audio</string>
+    <string name="text_camera_angletext">Angle</string>
+    <string name="text_camera_codetext">Code</string>
+    <string name="button_camera_stopaudiobutton">Stop Audio</string>
 
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Close</string>

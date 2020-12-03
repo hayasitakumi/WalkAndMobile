@@ -1772,7 +1772,7 @@ static int Trmask(const Mat& image, vector<vector<Point> >& sq, int sqindex, con
 
 extern "C" {
 JNIEXPORT void JNICALL
-Java_com_matuilab_walkandmobile_MainActivity_recog(
+Java_com_matuilab_walkandmobile_CameraFragment_recog(
         JNIEnv *env,
         jobject instance,
         jlong imageAddr,
@@ -1905,3 +1905,9 @@ Java_com_matuilab_walkandmobile_MainActivity_recog(
 }
 
 
+//extern "C"
+//JNIEXPORT void JNICALL
+//Java_com_matuilab_walkandmobile_CameraFragment_recog(JNIEnv *env, jobject thiz, jlong image_addr,
+//                                                     jintArray sample) {
+//    // TODO: implement recog()
+//}

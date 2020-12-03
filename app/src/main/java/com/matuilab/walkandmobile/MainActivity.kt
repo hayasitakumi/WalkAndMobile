@@ -21,6 +21,7 @@ import com.matuilab.walkandmobile.util.LanguageProcessor
 import com.matuilab.walkandmobile.util.ServerConnection
 import kotlinx.android.synthetic.main.activity_main.*
 import org.opencv.android.BaseLoaderCallback
+import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener
 import org.opencv.android.LoaderCallbackInterface
 import org.opencv.android.OpenCVLoader
@@ -29,7 +30,7 @@ import java.util.*
 
 
 @Suppress("TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
-class MainActivity : AppCompatActivity(), CvCameraViewListener {
+class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListener {
     companion object {
         lateinit var Ret: IntArray
         var Code = 0
@@ -236,6 +237,10 @@ class MainActivity : AppCompatActivity(), CvCameraViewListener {
 
     override fun onCameraViewStarted(width: Int, height: Int) {}
     override fun onCameraViewStopped() {}
+//    override fun onCameraFrame(inputFrame: CameraBridgeViewBase.CvCameraViewFrame?): Mat {
+//        TODO("Not yet implemented")
+//    }
+
     override fun onResume() {
         super.onResume()
 

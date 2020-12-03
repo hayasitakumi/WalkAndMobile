@@ -28,9 +28,9 @@
     <string name="alert_dialog_message_for_permission">アプリがこの操作を実行するには次の権限の許可が必要です。\n
         カメラ\n\n権限を許可するには、[アプリ情報]→[許可]に移動してください。</string>
 
-    <string name="text_main_angletext">アングル</string>
-    <string name="text_main_codetext">コード</string>
-    <string name="button_main_stopaudiobutton">音声停止</string>
+    <string name="text_camera_angletext">アングル</string>
+    <string name="text_camera_codetext">コード</string>
+    <string name="button_camera_stopaudiobutton">音声停止</string>
 
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Close</string>

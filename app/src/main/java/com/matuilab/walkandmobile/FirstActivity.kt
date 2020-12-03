@@ -15,6 +15,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_first.*
+import org.opencv.android.CameraBridgeViewBase
 
 
 class FirstActivity : AppCompatActivity() {

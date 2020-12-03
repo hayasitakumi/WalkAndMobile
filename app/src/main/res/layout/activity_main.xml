@@ -80,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:textStyle="bold"
-            android:text="@string/text_main_codetext"
+            android:text="@string/text_camera_codetext"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/main_guideline_horizontal0"
             app:layout_constraintBottom_toBottomOf="@+id/main_guideline_horizontal1"/>
@@ -102,7 +102,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:textStyle="bold"
-            android:text="@string/text_main_angletext"
+            android:text="@string/text_camera_angletext"
             app:layout_constraintStart_toStartOf="@+id/main_guideline_vertical"
             app:layout_constraintTop_toTopOf="@+id/main_guideline_horizontal0"
             app:layout_constraintBottom_toBottomOf="@+id/main_guideline_horizontal1"/>
@@ -122,7 +122,7 @@
             android:id="@+id/main_stopaudiobutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/button_main_stopaudiobutton"
+            android:text="@string/button_camera_stopaudiobutton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
