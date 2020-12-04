@@ -10,7 +10,7 @@
             android:id="@+id/nav_download_in_advance"
             android:title="@string/drawer_text_download_in_advance" />
         <item
-            android:id="@+id/nav_privacy_policy"
+            android:id="@+id/privacy_policy_fragment"
             android:title="@string/drawer_text_privacy_policy" />
     </group>
 </menu>

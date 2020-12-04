@@ -3,37 +3,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_graph"
-    app:startDestination="@id/permission_check_navigation">
+    app:startDestination="@id/permission_check_fragment">
 
     <fragment
-        android:id="@+id/permission_check_navigation"
+        android:id="@+id/permission_check_fragment"
         android:name="com.matuilab.walkandmobile.PermissionCheckFragment"
         android:label="fragment_permission_check"
         tools:layout="@layout/fragment_permission_check" >
         <action
             android:id="@+id/action_permission_check_to_camera"
-            app:destination="@id/camera_navigation"
-            app:launchSingleTop="false" />
+            app:destination="@id/camera_fragment"
+            app:popUpTo="@id/permission_check_fragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
-        android:id="@+id/camera_navigation"
+        android:id="@+id/camera_fragment"
         android:name="com.matuilab.walkandmobile.CameraFragment"
         android:label="fragment_camera"
-        tools:layout="@layout/app_bar_main" >
+        tools:layout="@layout/fragment_camera" >
         <action
             android:id="@+id/action_camera_to_privacy_policy"
-            app:destination="@id/privacy_policy_navigation" />
+            app:destination="@id/privacy_policy_fragment"
+            app:popUpTo="@id/camera_fragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/privacy_policy_navigation"
+        android:id="@+id/privacy_policy_fragment"
         android:name="com.matuilab.walkandmobile.PrivacyPolicyFragment"
         android:label="fragment_third"
-        tools:layout="@layout/fragment_privacy_policy">
-        <action
-            android:id="@+id/action_privacy_policy_to_camera"
-            app:destination="@id/camera_navigation" />
-    </fragment>
+        tools:layout="@layout/fragment_privacy_policy"/>
 
 </navigation>

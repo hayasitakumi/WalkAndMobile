@@ -108,6 +108,7 @@ class CameraFragment : Fragment(), CameraBridgeViewBase.CvCameraViewListener {
 
         if ((Ret[0] >= 0) && (Code > 0) && (Angle >= 0)) {
             if (Code != CodeSab || Angle != AngleSab) {
+                showCodeAndAngle(Code, Angle)
                 // 案内文取得
                 val url: String = serverConnection.getMessageUrl(Code, Angle, "normal", localLang)
                 val task = HttpResponsAsync(requireActivity())
@@ -132,12 +133,18 @@ class CameraFragment : Fragment(), CameraBridgeViewBase.CvCameraViewListener {
             AngleSab = Angle
         }
 
-        mHandler!!.post(Runnable
-        //run()の中の処理はメインスレッドで動作されます。
-        {
-            camera_code.text = Code.toString()
-            camera_angle.text = Angle.toString()
-        })
+//        mHandler!!.post(Runnable
+//        //run()の中の処理はメインスレッドで動作されます。
+//        {
+//            if(Code != null){
+//                camera_code.text = Code.toString()
+//                camera_angle.text = Angle.toString()
+//            }else{
+//                camera_code.text = "0"
+//                camera_angle.text = "-1"
+//            }
+
+//        })
         return inputFrame
     }
 
@@ -172,6 +179,13 @@ class CameraFragment : Fragment(), CameraBridgeViewBase.CvCameraViewListener {
         super.onStop()
         Code = 0
         AngleSab = -1
+    }
+
+    private fun showCodeAndAngle(code:Int, angle:Int){
+        mHandler!!.post {
+            camera_code.text = code.toString()
+            camera_angle.text = angle.toString()
+        }
     }
 
     //ここでnative-libの外身を定義する

@@ -29,9 +29,9 @@ class PrivacyPolicyActivity : AppCompatActivity() {
     override fun onBackPressed() {
         // Do something
         super.onBackPressed()
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
+//        val intent = Intent(this, MainActivity::class.java)
+//        startActivity(intent)
+//        finish()
     }
 
     override fun onSupportNavigateUp(): Boolean {

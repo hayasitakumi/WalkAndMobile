@@ -1,276 +1,150 @@
 package com.matuilab.walkandmobile
 
-import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ListView
+import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.matuilab.walkandmobile.http.HttpGetAudio
-import com.matuilab.walkandmobile.http.HttpGetAudio.Companion.mediaPlayer
-import com.matuilab.walkandmobile.http.HttpGetJson
-import com.matuilab.walkandmobile.http.HttpResponsAsync
-import com.matuilab.walkandmobile.util.LanguageProcessor
-import com.matuilab.walkandmobile.util.ServerConnection
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.*
+import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
-import org.opencv.android.BaseLoaderCallback
-import org.opencv.android.CameraBridgeViewBase
-import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener
-import org.opencv.android.LoaderCallbackInterface
-import org.opencv.android.OpenCVLoader
-import org.opencv.core.Mat
-import java.util.*
 
 
-@Suppress("TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
-class MainActivity : AppCompatActivity(), CameraBridgeViewBase.CvCameraViewListener {
-    companion object {
-        lateinit var Ret: IntArray
-        var Code = 0
-        var Angle = 0
-        var mean0 = 0
 
-        var CodeSab = 0
-        var AngleSab = 5
+class MainActivity : AppCompatActivity() {
 
-        var audioStop: Boolean = true
 
-        init {
-            System.loadLibrary("native-lib")
-        }
-
-    }
-
-    var mHandler: Handler? = null
-    private var saveAppDir: String? = null
-
-    private var localLang: String? = null //言語設定（ja , en）
-    lateinit var languageProcessor: LanguageProcessor
-
-    var serverConnection: ServerConnection = ServerConnection() // サーバ接続用（ここでは主にURL取得に使用）
-
-    private val mLoaderCallback: BaseLoaderCallback = object : BaseLoaderCallback(this) {
-        override fun onManagerConnected(status: Int) {
-            when (status) {
-                LoaderCallbackInterface.SUCCESS -> main_cameraview!!.enableView()
-                else -> super.onManagerConnected(status)
-            }
-        }
-    }
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        /** 変数の定義 */
-        languageProcessor = LanguageProcessor(resources.getStringArray(R.array.code_language))
-        mHandler = Handler()
-//        val getPreferences = getSharedPreferences("pref", MODE_PRIVATE)
-//
-//        val str = getPreferences.getString("test", "") //	キー、デフォールト値
-//
-//        Log.d("checkeditem", "pref:$str")
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
 
-        /** 言語設定取得（未設定の場合は端末の設定値を使用）*/
-        // 環境設定 : https://developer.android.com/training/data-storage/shared-preferences?hl=ja
-        // 端末言語 :  https://qiita.com/BlackCat/downloadButtons/c223bf48c2dbfada0d42
-        localLang = Locale.getDefault().language   //端末の設定言語を取得
-        if (languageProcessor.indexOfLanguage(localLang) <= 0) {
-            // 対応リストに無ければ英語を使用（日本語、英語でもなければ英語を設定）
-            localLang = "en"
-        }
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        val navView: NavigationView = findViewById(R.id.nav_view)
+        val navController = findNavController(R.id.nav_host_fragment)
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+        appBarConfiguration = AppBarConfiguration(setOf(
+                R.id.permission_check_fragment, R.id.camera_fragment), drawerLayout)
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
 
-        saveAppDir = filesDir.absolutePath
-
-        main_cameraview.setCvCameraViewListener(this)
-
-        /**音声停止ボタン*/
-        main_stopaudiobutton.setOnClickListener {
-            audioStop = false
-            //再生終了
-            mediaPlayer.stop()
-            // リセット
-            mediaPlayer.reset()
-        }
-
-        /**Toolbarの設定*/
-        setSupportActionBar(main_toolbar)
-        supportActionBar?.let {
-            it.setDisplayHomeAsUpEnabled(true)
-            it.setHomeButtonEnabled(true)
-        } ?: IllegalAccessException("Toolbar cannot be null")
-
-        /**NavigationDrawerの設定*/
-        val toggle = ActionBarDrawerToggle(
-                this, main_drawerlayout, main_toolbar,
-                R.string.drawer_open,
-                R.string.drawer_close)
-        main_drawerlayout!!.addDrawerListener(toggle)
-        toggle.syncState()
-
-        /** Preferenceの設定 */
-        val setPreferences: SharedPreferences = getPreferences(MODE_PRIVATE)
-        val editor: SharedPreferences.Editor = setPreferences.edit()
-
-        main_navigationview.setNavigationItemSelectedListener {
-            when (it.itemId) {
-                /** 再生速度 */
-//                R.id.drawer_item_playback_speed -> {
-//
-//                }
-
-                /** 事前ダウンロードボタン */
-                R.id.nav_download_in_advance -> {
-                    if (languageProcessor.indexOfLanguage(localLang) <= 0) {
-                        // 対応リストに無ければ英語を使用（日本語、英語でもなければ英語を設定）
-                        localLang = "en"
-                    }
-                    /**事前ダウンロードのダイアログ*/
-                    val getJson = HttpGetJson(this)
-
-                    val listDownloadButtons: MutableList<String> = mutableListOf(
-                            getString(R.string.download_in_advance_pbutton),
-                            getString(R.string.download_in_advance_nebutton),
-                            getString(R.string.download_in_advance_nbutton))
-
-                    val arrayAdapterButtons = ArrayAdapter(this,
-                            R.layout.dialog_download_in_advance_row, R.id.dialog_download_in_advance_list_item, listDownloadButtons)
-
-                    val content: View = layoutInflater.inflate(R.layout.dialog_download_in_advance, null)
-
-                    //this is the ListView that lists your downloadButtons
-                    val downloadButtons: ListView = content.findViewById(R.id.dialog_download_in_advance_list)
-                    downloadButtons.adapter = arrayAdapterButtons
+//        val navController = findNavController(R.id.nav_host_fragment)
+//        val appBarConfiguration = AppBarConfiguration(navController.graph, drawer_layout)
+//        findViewById<Toolbar>(R.id.toolbar)
+//                .setupWithNavController(navController, appBarConfiguration)
 
 
-                    val builder = MaterialAlertDialogBuilder(this).setTitle(R.string.download_in_advance_title).setView(content)
-                    val dialog = builder.create()
 
-                    dialog.show()
 
-                    downloadButtons.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        //when you need to act on itemClick
-                        when (position) {
-                            0 -> {
-                                dialog.dismiss()
-                                getJson.execute(saveAppDir, languageProcessor.addressLanguage(localLang))
-                            }
-                            1 -> {
-                                dialog.dismiss()
-                                getJson.execute(saveAppDir, languageProcessor.addressLanguage(localLang), "FALSE")
-                            }
-                            else -> {
-                                dialog.cancel()
-                            }
-                        }
-                    }
-                }
+//        val navHostFragment =
+//                supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+//        val navController = navHostFragment.navController
+//        val appBarConfiguration = AppBarConfiguration(navController.graph, drawer_layout)
+//        findViewById<NavigationView>(R.id.nav_view)
+//                .setupWithNavController(navController)
 
-                /** プライバシーポリシーボタン */
-                R.id.nav_privacy_policy -> {
-                    val intent = Intent(this, PrivacyPolicyActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                }
-            }
-            main_drawerlayout.closeDrawer(GravityCompat.START)
-            true
-        }
     }
 
-    //ここでインプットを行列に変換している、returnしたものが表示される
-    override fun onCameraFrame(inputFrame: Mat): Mat {
-        //10まで予約しているが全て使っているわけでない
-        Ret = IntArray(10)
-
-        //Cのポインタを入れる？
-        val addr = inputFrame.nativeObjAddr
-        Code = 0
-        Angle = -1
-        mean0 = 0
-        recog(addr, Ret)
-        Code = Ret[1]
-        Angle = Ret[2]
-        mean0 = Ret[3]
-
-        if ((Ret[0] >= 0) && (Code > 0) && (Angle >= 0)) {
-            if (Code != CodeSab || Angle != AngleSab) {
-                // 案内文取得
-                val url: String = serverConnection.getMessageUrl(Code, Angle, "normal", localLang)
-                val task = HttpResponsAsync(this)
-                task.execute(url, java.lang.String.valueOf(Code), java.lang.String.valueOf(Angle), languageProcessor.addressLanguage(localLang)) //引数追加
-
-                audioStop = true
-            }
-
-            if (!mediaPlayer.isPlaying && audioStop) {
-                // URL作成
-                val audioFile = String.format("wm%05d_%d.mp3", Code, Angle)
-                val audioUrl: String = serverConnection.getVoiceUrl(languageProcessor.addressLanguage(localLang)) + "/" + audioFile
-                // 保存先パスの作成
-                val savePath = saveAppDir + "/message" + languageProcessor.addressLanguage(localLang) + "/" + audioFile // アプリ専用ディレクトリ/message_en/wm00129_3.mp3
-                // 音声取得再生タスクの実行
-                val audioTask = HttpGetAudio()
-                audioTask.execute(audioUrl, savePath) //引数は【音声ファイルのURL】と【音声ファイルの絶対パス】
-            }
-
-            // 取得コードをCodeSabに入れ、同じコードを取得し続けても通信をしないようにする
-            CodeSab = Code
-            AngleSab = Angle
-        }
-
-        mHandler!!.post(Runnable
-        //run()の中の処理はメインスレッドで動作されます。
-        {
-            main_code.text = Code.toString()
-            main_angle.text = Angle.toString()
-        })
-        return inputFrame
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment)
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
-
-    override fun onCameraViewStarted(width: Int, height: Int) {}
-    override fun onCameraViewStopped() {}
-//    override fun onCameraFrame(inputFrame: CameraBridgeViewBase.CvCameraViewFrame?): Mat {
-//        TODO("Not yet implemented")
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        Log.d("itemselected", "$item")
+//        val navController = findNavController(R.id.nav_host_fragment)
+//        return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
 //    }
 
-    override fun onResume() {
-        super.onResume()
+//    override fun onResume() {
+//        super.onResume()
+//        val toolbar: Toolbar = findViewById(R.id.toolbar)
+//        setSupportActionBar(toolbar)
+//        supportActionBar?.let {
+//            it.setDisplayHomeAsUpEnabled(true)
+//            it.setHomeButtonEnabled(true)
+//        } ?: IllegalAccessException("Toolbar cannot be null")
+//
+//        /** sync drawer */
+//        val actionBarDrawerToggle = ActionBarDrawerToggle(
+//                this, drawer_layout, toolbar, R.string.drawer_open, R.string.drawer_close)
+//        drawer_layout.addDrawerListener(actionBarDrawerToggle)
+//        actionBarDrawerToggle.syncState()
+//
+////        val navView: NavigationView = findViewById(R.id.nav_view)
+//        val navController = findNavController(R.id.nav_host_fragment)
+//
+//        appBarConfiguration = AppBarConfiguration(setOf(R.id.permission_check_navigation, R.id.camera_navigation))
+//        setupActionBarWithNavController(navController, appBarConfiguration)
+//        nav_view.setupWithNavController(navController)
+//
+//        // set navigation
+//        nav_view.setNavigationItemSelectedListener {
+//            when (it.itemId) {
+//                /** 再生速度 */
+//                R.id.nav_settings -> {
+//                    Log.d("nav_test", "settings")
+//                }
+//
+//                /** 事前ダウンロードボタン */
+//                R.id.nav_download_in_advance -> {
+//                    Log.d("nav_test", "download")
+//                }
+//
+//                /** プライバシーポリシーボタン */
+//                R.id.nav_privacy_policy -> {
+//                    Log.d("nav_test", "privacy_policy")
+//                    findNavController(R.id.nav_host_fragment).navigate(R.id.action_camera_to_privacy_policy)
+//                }
+//            }
+//            drawer_layout.closeDrawer(GravityCompat.START)
+//            false
+//        }
+//    }
 
-        CodeSab = 0
-        AngleSab = -1
-        // 非同期でライブラリの読み込み/初期化を行う
-        if (!OpenCVLoader.initDebug()) {
-            //Log.d("onResume", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mLoaderCallback)
-        } else {
-            //Log.d("onResume", "OpenCV library found inside package. Using it!");
-            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS)
-        }
-    }
+//    override fun onSupportNavigateUp(): Boolean {
+//        val navController = findNavController(R.id.nav_host_fragment)
+//        return navController.navigateUp(appBarConfiguration)
+//                || super.onSupportNavigateUp()
+//    }
+//
+//    override fun onBackPressed() {
+//        // Do something
+//        supportFragmentManager.popBackStack()
+//        super.onBackPressed()
+////        val intent = Intent(this, MainActivity::class.java)
+////        startActivity(intent)
+////        finish()
+//    }
 
-    public override fun onPause() {
-        super.onPause()
+//    override fun onSupportNavigateUp(): Boolean {
+////        val navController = findNavController(R.id.nav_host_fragment)
+////        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+//        onBackPressed()
+//        return true
+//    }
 
-        if (main_cameraview != null) main_cameraview!!.disableView()
-    }
-
-    public override fun onRestart() {
-        super.onRestart()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Code = 0
-    }
-
-    //ここでnative-libの外身を定義する
-    private external fun recog(imageAddr: Long, sample: IntArray?)
+//    override fun lockDrawer() {
+//        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+//    }
+//
+//    override fun unlockDrawer() {
+//        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+//    }
+////    override fun onSupportNavigateUp()
+////            = findNavController(R.id.nav_host_fragment).popBackStack()
+//}
+//
+//interface DrawerInterface {
+//    fun lockDrawer()
+//    fun unlockDrawer()
 }

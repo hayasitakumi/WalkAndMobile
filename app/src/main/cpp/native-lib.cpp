@@ -1903,11 +1903,3 @@ Java_com_matuilab_walkandmobile_CameraFragment_recog(
     env->ReleaseIntArrayElements(RetObj, Ret, 0);
 }
 }
-
-
-//extern "C"
-//JNIEXPORT void JNICALL
-//Java_com_matuilab_walkandmobile_CameraFragment_recog(JNIEnv *env, jobject thiz, jlong image_addr,
-//                                                     jintArray sample) {
-//    // TODO: implement recog()
-//}

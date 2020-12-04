@@ -1,5 +1,5 @@
 package com.matuilab.walkandmobile.http
-// DB移行に関して
+
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
@@ -11,8 +11,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.room.Room
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.matuilab.walkandmobile.MainActivity.Companion.AngleSab
-import com.matuilab.walkandmobile.MainActivity.Companion.CodeSab
+import com.matuilab.walkandmobile.CameraFragment.Companion.AngleSab
+import com.matuilab.walkandmobile.CameraFragment.Companion.CodeSab
 import com.matuilab.walkandmobile.R
 import com.matuilab.walkandmobile.data.AppDatabase
 import com.matuilab.walkandmobile.data.AppDatabase.Companion.MIGRATION_1_2
@@ -25,7 +25,7 @@ import java.net.URL
 
 class HttpResponsAsync(private val mActivity: Activity) : AsyncTask<String?, Void?, String?>() {
     override fun doInBackground(vararg params: String?): String? {
-        /* 案内文取得
+        /** 案内文取得
          * 引数：execute( サーバURL , コード , アングル , アンダーバー付き言語コード )
          * */
 
