@@ -33,9 +33,15 @@ class PermissionCheckFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
 //        val view = inflater.inflate(R.layout.fragment_permission_check, container, false)
 
-        showCameraWithPermissionCheck()
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_permission_check, container, false)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        showCameraWithPermissionCheck()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

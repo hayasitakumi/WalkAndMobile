@@ -3,12 +3,9 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_settings"
+            android:id="@+id/settings_fragment"
             android:title="@string/drawer_text_settings" />
 
-        <item
-            android:id="@+id/nav_download_in_advance"
-            android:title="@string/drawer_text_download_in_advance" />
         <item
             android:id="@+id/privacy_policy_fragment"
             android:title="@string/drawer_text_privacy_policy" />

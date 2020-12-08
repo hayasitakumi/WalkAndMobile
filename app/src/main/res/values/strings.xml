@@ -44,13 +44,22 @@
     <string name="drawer_text_privacy_policy">Privacy Policy</string>
     <string name="drawer_text_settings">Settings</string>
 
-    <string name="drawer_text_playback_speed">Playback speed</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="first_fragment">1stFragment</string>
-    <string name="second_fragment">2ndFragment</string>
-    <string name="third_fragment">3rdFragment</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_settings_playback_speed">Playback speed</string>
+    <string name="title_settings_download">Download</string>
+    <string name="text_settings_download_guidance_infomation">guidance information</string>
+    <string name="text_settings_download_guidance_infomation_and_guidance_voices">Guidance information and Guidance voices</string>
+
     <string name="camera_code_zero">0</string>
     <string name="camera_angle_minus_one">-1</string>
+
+    <string-array name="array_settings_spinner">
+        <item>0.25x</item>
+        <item>0.5x</item>
+        <item>0.75x</item>
+        <item>normal</item>
+        <item>1.25x</item>
+        <item>1.5x</item>
+        <item>1.75x</item>
+        <item>2x</item>
+    </string-array>
 </resources>

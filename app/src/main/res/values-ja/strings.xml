@@ -41,7 +41,22 @@
     <string name="drawer_text_privacy_policy">プライバシーポリシー</string>
     <string name="drawer_text_settings">設定</string>
 
-    <string name="drawer_text_playback_speed">再生速度</string>
+    <string name="title_settings_playback_speed">再生速度</string>
+    <string name="title_settings_download">ダウンロード</string>
+    <string name="text_settings_download_guidance_infomation">案内文章</string>
+    <string name="text_settings_download_guidance_infomation_and_guidance_voices">案内文章と案内音声</string>
+
     <string name="camera_code_zero">0</string>
     <string name="camera_angle_minus_one">-1</string>
+
+    <string-array name="array_settings_spinner">
+        <item>0.25倍速</item>
+        <item>0.5倍速</item>
+        <item>0.75倍速</item>
+        <item>normal</item>
+        <item>1.25倍速</item>
+        <item>1.5倍速</item>
+        <item>1.75倍速</item>
+        <item>2倍速</item>
+    </string-array>
 </resources>

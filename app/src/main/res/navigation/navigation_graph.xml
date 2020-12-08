@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/permission_check_fragment"
         android:name="com.matuilab.walkandmobile.PermissionCheckFragment"
-        android:label="fragment_permission_check"
+        android:label="PermissionCheckFragment"
         tools:layout="@layout/fragment_permission_check" >
         <action
             android:id="@+id/action_permission_check_to_camera"
@@ -20,18 +20,27 @@
     <fragment
         android:id="@+id/camera_fragment"
         android:name="com.matuilab.walkandmobile.CameraFragment"
-        android:label="fragment_camera"
+        android:label="CameraFragment"
         tools:layout="@layout/fragment_camera" >
-        <action
-            android:id="@+id/action_camera_to_privacy_policy"
-            app:destination="@id/privacy_policy_fragment"
-            app:popUpTo="@id/camera_fragment" />
+<!--        <action-->
+<!--            android:id="@+id/action_camera_to_privacy_policy"-->
+<!--            app:destination="@id/privacy_policy_fragment"-->
+<!--            app:popUpTo="@id/camera_fragment" />-->
+<!--        <action-->
+<!--            android:id="@+id/action_camera_fragment_to_settingsFragment2"-->
+<!--            app:destination="@id/settings_fragment" />-->
     </fragment>
 
+<!--    Navigation UIから画面遷移する場合、menuとidを同じにする必要があります"-->
     <fragment
         android:id="@+id/privacy_policy_fragment"
         android:name="com.matuilab.walkandmobile.PrivacyPolicyFragment"
-        android:label="fragment_third"
+        android:label="PrivacyPolicyFragment"
         tools:layout="@layout/fragment_privacy_policy"/>
+    <fragment
+        android:id="@+id/settings_fragment"
+        android:name="com.matuilab.walkandmobile.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/fragment_settings"/>
 
 </navigation>

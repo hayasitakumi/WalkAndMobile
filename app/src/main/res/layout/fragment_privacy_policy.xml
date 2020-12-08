@@ -5,10 +5,8 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".PrivacyPolicyFragment">
-
-    <TextView
+    <com.joanzapata.pdfview.PDFView
+        android:id="@+id/privacy_policy_pdfview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/third_fragment" />
-
+        android:layout_height="match_parent"/>
 </FrameLayout>

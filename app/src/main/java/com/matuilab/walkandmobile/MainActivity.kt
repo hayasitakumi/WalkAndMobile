@@ -25,70 +25,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-
-        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.permission_check_fragment, R.id.camera_fragment), drawerLayout)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-
-//        val navController = findNavController(R.id.nav_host_fragment)
-//        val appBarConfiguration = AppBarConfiguration(navController.graph, drawer_layout)
-//        findViewById<Toolbar>(R.id.toolbar)
-//                .setupWithNavController(navController, appBarConfiguration)
-
-
-
-
-//        val navHostFragment =
-//                supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-//        val navController = navHostFragment.navController
-//        val appBarConfiguration = AppBarConfiguration(navController.graph, drawer_layout)
-//        findViewById<NavigationView>(R.id.nav_view)
-//                .setupWithNavController(navController)
-
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-    }
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        Log.d("itemselected", "$item")
-//        val navController = findNavController(R.id.nav_host_fragment)
-//        return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
-//    }
-
-//    override fun onResume() {
-//        super.onResume()
-//        val toolbar: Toolbar = findViewById(R.id.toolbar)
-//        setSupportActionBar(toolbar)
-//        supportActionBar?.let {
-//            it.setDisplayHomeAsUpEnabled(true)
-//            it.setHomeButtonEnabled(true)
-//        } ?: IllegalAccessException("Toolbar cannot be null")
-//
-//        /** sync drawer */
-//        val actionBarDrawerToggle = ActionBarDrawerToggle(
-//                this, drawer_layout, toolbar, R.string.drawer_open, R.string.drawer_close)
-//        drawer_layout.addDrawerListener(actionBarDrawerToggle)
-//        actionBarDrawerToggle.syncState()
-//
-////        val navView: NavigationView = findViewById(R.id.nav_view)
-//        val navController = findNavController(R.id.nav_host_fragment)
-//
-//        appBarConfiguration = AppBarConfiguration(setOf(R.id.permission_check_navigation, R.id.camera_navigation))
-//        setupActionBarWithNavController(navController, appBarConfiguration)
-//        nav_view.setupWithNavController(navController)
-//
 //        // set navigation
-//        nav_view.setNavigationItemSelectedListener {
+//        navView.setNavigationItemSelectedListener {
 //            when (it.itemId) {
 //                /** 再生速度 */
 //                R.id.nav_settings -> {
@@ -99,52 +37,64 @@ class MainActivity : AppCompatActivity() {
 //                R.id.nav_download_in_advance -> {
 //                    Log.d("nav_test", "download")
 //                }
-//
-//                /** プライバシーポリシーボタン */
-//                R.id.nav_privacy_policy -> {
-//                    Log.d("nav_test", "privacy_policy")
-//                    findNavController(R.id.nav_host_fragment).navigate(R.id.action_camera_to_privacy_policy)
-//                }
 //            }
 //            drawer_layout.closeDrawer(GravityCompat.START)
-//            false
+//            true
 //        }
-//    }
 
-//    override fun onSupportNavigateUp(): Boolean {
+//        val toolbar: Toolbar = findViewById(R.id.toolbar)
+//        setSupportActionBar(toolbar)
+//
+//        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+//        val navView: NavigationView = findViewById(R.id.nav_view)
+//
 //        val navController = findNavController(R.id.nav_host_fragment)
-//        return navController.navigateUp(appBarConfiguration)
-//                || super.onSupportNavigateUp()
-//    }
+//        // Passing each menu ID as a set of Ids because each
+//        // menu should be considered as top level destinations.
+//        appBarConfiguration = AppBarConfiguration(setOf(
+//                R.id.permission_check_fragment, R.id.camera_fragment), drawerLayout)
+//        setupActionBarWithNavController(navController, appBarConfiguration)
+//        navView.setupWithNavController(navController)
+    }
+
+//    override fun onStart() {
+//        super.onStart()
+//        val toolbar: Toolbar = findViewById(R.id.toolbar)
+//        setSupportActionBar(toolbar)
 //
-//    override fun onBackPressed() {
-//        // Do something
-//        supportFragmentManager.popBackStack()
-//        super.onBackPressed()
-////        val intent = Intent(this, MainActivity::class.java)
-////        startActivity(intent)
-////        finish()
+//        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+//        val navView: NavigationView = findViewById(R.id.nav_view)
+//
+//        val navController = findNavController(R.id.nav_host_fragment)
+//        // Passing each menu ID as a set of Ids because each
+//        // menu should be considered as top level destinations.
+//        appBarConfiguration = AppBarConfiguration(setOf(
+//                R.id.permission_check_fragment, R.id.camera_fragment), drawerLayout)
+//        setupActionBarWithNavController(navController, appBarConfiguration)
+//        navView.setupWithNavController(navController)
 //    }
 
-//    override fun onSupportNavigateUp(): Boolean {
-////        val navController = findNavController(R.id.nav_host_fragment)
-////        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-//        onBackPressed()
-//        return true
-//    }
+    override fun onResume() {
+        super.onResume()
 
-//    override fun lockDrawer() {
-//        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-//    }
-//
-//    override fun unlockDrawer() {
-//        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-//    }
-////    override fun onSupportNavigateUp()
-////            = findNavController(R.id.nav_host_fragment).popBackStack()
-//}
-//
-//interface DrawerInterface {
-//    fun lockDrawer()
-//    fun unlockDrawer()
+
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        val navView: NavigationView = findViewById(R.id.nav_view)
+
+        val navController = findNavController(R.id.nav_host_fragment)
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+        appBarConfiguration = AppBarConfiguration(setOf(
+                R.id.permission_check_fragment, R.id.camera_fragment), drawerLayout)
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment)
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
 }

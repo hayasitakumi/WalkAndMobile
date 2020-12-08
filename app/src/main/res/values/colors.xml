@@ -6,4 +6,10 @@
 <!--    <color name="cbb_launcher_background">#FFD966</color>-->
 
     <color name="colorDrawerHeader">#CDDC39</color>
+
+    <color name="setting_title_background">#E6ECF0</color>
+    <color name="setting_title_text">#657786</color>
+
+
+
 </resources>

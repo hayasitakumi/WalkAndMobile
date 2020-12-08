@@ -1,5 +1,8 @@
 package com.matuilab.walkandmobile.http
 
+import android.app.Activity
+import android.content.Context
+import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.media.PlaybackParams
 import android.os.AsyncTask
@@ -13,7 +16,7 @@ import java.net.URL
 /* 音声案内を取得するためのクラス
    execute()の引数は、execute( URL全体 , ファイル名含むパス , 言語 )
 */
-class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
+class HttpGetAudio(private val mActivity: Activity) : AsyncTask<String?, Void?, String?>() {
     override fun doInBackground(vararg params: String?): String? {
         /** 案内音声を取得する
          * もし取得済みなら中断してonPostExecute()で音声再生
@@ -131,6 +134,7 @@ class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
         }
         try {
             val params: PlaybackParams = PlaybackParams()
+//            val sharedPreferences: SharedPreferences = mActivity.getSharedPreferences("user_settings", Context.MODE_PRIVATE)
             mediaPlayer.apply {
                 setDataSource(result)
                 // 一時的な速度変更(https://qiita.com/wa2c/items/8eb9d02ad1ce9a17ced8)
@@ -143,7 +147,7 @@ class HttpGetAudio : AsyncTask<String?, Void?, String?>() {
                     //mediaPlayer.release();    //release()までやってしまうと、次にsetDataSource()ができなくなる（公式ドキュメントMediaPlayerを参照）
                 }
                 start()
-                playbackParams = params.setSpeed(3.0f)
+//                playbackParams = params.setSpeed(sharedPreferences.getFloat("PLAYBACK_SPEED", 1.0f))
             }
         } catch (e: IOException) {
             // 以下、setDataSource()使用時に必要な例外処理
