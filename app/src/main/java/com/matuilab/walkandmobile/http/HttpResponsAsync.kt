@@ -13,6 +13,8 @@ import androidx.room.Room
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.matuilab.walkandmobile.CameraFragment.Companion.AngleSab
 import com.matuilab.walkandmobile.CameraFragment.Companion.CodeSab
+//import com.matuilab.walkandmobile.CameraFragment.Companion.AngleSab
+//import com.matuilab.walkandmobile.CameraFragment.Companion.CodeSab
 import com.matuilab.walkandmobile.R
 import com.matuilab.walkandmobile.data.AppDatabase
 import com.matuilab.walkandmobile.data.AppDatabase.Companion.MIGRATION_1_2

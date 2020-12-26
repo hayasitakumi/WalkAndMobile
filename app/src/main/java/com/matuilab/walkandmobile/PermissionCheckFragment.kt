@@ -31,16 +31,11 @@ class PermissionCheckFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-//        val view = inflater.inflate(R.layout.fragment_permission_check, container, false)
-
-
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_permission_check, container, false)
     }
 
     override fun onStart() {
         super.onStart()
-
         showCameraWithPermissionCheck()
     }
 
@@ -48,7 +43,6 @@ class PermissionCheckFragment : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         onRequestPermissionsResult(requestCode, grantResults)
     }
-
 
     //以下CAMERA
     @NeedsPermission(Manifest.permission.CAMERA)
@@ -72,8 +66,6 @@ class PermissionCheckFragment : Fragment() {
     private fun startNextActivity() {
 
         if (isCameraAllowed) {
-//            val intent = Intent(this, MainActivity::class.java)
-
 
             val languageProcessor = LanguageProcessor(resources.getStringArray(R.array.code_language))
             var localLang = Locale.getDefault().language   //端末の設定言語を取得
@@ -93,8 +85,6 @@ class PermissionCheckFragment : Fragment() {
                     // resultにはdoInBackgroundの返り値が入ります。
                     // ここからAsyncTask処理後の処理を記述します。
                     findNavController().navigate(R.id.action_permission_check_to_camera)
-//                    startActivity(intent)
-//                    finish()
                 }
             })
 
@@ -114,11 +104,8 @@ class PermissionCheckFragment : Fragment() {
 
             val builder = MaterialAlertDialogBuilder(requireActivity()).setOnCancelListener {
                 findNavController().navigate(R.id.action_permission_check_to_camera)
-//                startActivity(intent)
-//                finish()
             }.setTitle(R.string.download_in_advance_title).setMessage(R.string.download_in_advance_message).setView(content)
             val dialog = builder.create()
-
             dialog.show()
 
             downloadButtons.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
@@ -138,21 +125,21 @@ class PermissionCheckFragment : Fragment() {
                 }
             }
         } else {
-
             if (!isCameraAllowed)
-                MaterialAlertDialogBuilder(requireActivity())
-                        .setPositiveButton(android.R.string.cancel) { _, _ ->
-                            requireActivity().finish()
-                        }
-                        .setNegativeButton(R.string.button_name_app_info) { _, _ ->
-                            val uriString = "package:${requireActivity().packageName}"
-                            val intent =
-                                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
-                            startActivityForResult(intent, REQEST_CODE_MAGIC)
-                        }
-                        .setCancelable(false)
-                        .setMessage(R.string.alert_dialog_message_for_permission)
-                        .show()
+                requireActivity().finish()
+            MaterialAlertDialogBuilder(requireActivity())
+                .setPositiveButton(android.R.string.cancel) { _, _ ->
+                    requireActivity().finish()
+                }
+                .setNegativeButton(R.string.button_name_app_info) { _, _ ->
+                    val uriString = "package:${requireActivity().packageName}"
+                    val intent =
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
+                    startActivityForResult(intent, REQEST_CODE_MAGIC)
+                }
+                .setCancelable(false)
+                .setMessage(R.string.alert_dialog_message_for_permission)
+                .show()
 
         }
     }

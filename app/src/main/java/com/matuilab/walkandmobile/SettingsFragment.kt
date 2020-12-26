@@ -26,8 +26,8 @@ class SettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         /**Preferenceの設定*/
-//        val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("user_settings", Context.MODE_PRIVATE)
-//        val editor: SharedPreferences.Editor = sharedPreferences.edit()
+        val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("user_settings", Context.MODE_PRIVATE)
+        val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
         /**Spinnerの設定*/
         val spinnerAdapter = ArrayAdapter.createFromResource(requireActivity(),
@@ -35,16 +35,16 @@ class SettingsFragment : Fragment() {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         settings_spinner.adapter = spinnerAdapter
 
-//        when (sharedPreferences.getFloat("PLAYBACK_SPEED", 1.0f)) {
-//            0.25f -> settings_spinner.setSelection(0)
-//            0.5f -> settings_spinner.setSelection(1)
-//            0.75f -> settings_spinner.setSelection(2)
-//            1.0f -> settings_spinner.setSelection(3)
-//            1.25f -> settings_spinner.setSelection(4)
-//            1.5f -> settings_spinner.setSelection(5)
-//            1.75f -> settings_spinner.setSelection(6)
-//            2.0f -> settings_spinner.setSelection(7)
-//        }
+        when (sharedPreferences.getFloat("PLAYBACK_SPEED", 1.0f)) {
+            0.25f -> settings_spinner.setSelection(0)
+            0.5f -> settings_spinner.setSelection(1)
+            0.75f -> settings_spinner.setSelection(2)
+            1.0f -> settings_spinner.setSelection(3)
+            1.25f -> settings_spinner.setSelection(4)
+            1.5f -> settings_spinner.setSelection(5)
+            1.75f -> settings_spinner.setSelection(6)
+            2.0f -> settings_spinner.setSelection(7)
+        }
 
         // リスナーを登録
         settings_spinner.onItemSelectedListener = object : OnItemSelectedListener {
@@ -55,24 +55,24 @@ class SettingsFragment : Fragment() {
                 val item = spinner.selectedItem as String
                 Log.d("spinner_test", "item:$item position:$position id:$id")
 
-//                when (position) {
-//                    // 0.25x
-//                    0 -> editor.putFloat("PLAYBACK_SPEED", 0.25f).apply()
-//                    // 0.5x
-//                    1 -> editor.putFloat("PLAYBACK_SPEED", 0.5f).apply()
-//                    // 0.75x
-//                    2 -> editor.putFloat("PLAYBACK_SPEED", 0.75f).apply()
-//                    // normal
-//                    3 -> editor.putFloat("PLAYBACK_SPEED", 1.0f).apply()
-//                    // 1.25x
-//                    4 -> editor.putFloat("PLAYBACK_SPEED", 1.25f).apply()
-//                    // 1.5x
-//                    5 -> editor.putFloat("PLAYBACK_SPEED", 1.5f).apply()
-//                    // 1.75x
-//                    6 -> editor.putFloat("PLAYBACK_SPEED", 1.75f).apply()
-//                    // 2x
-//                    7 -> editor.putFloat("PLAYBACK_SPEED", 2.0f).apply()
-//                }
+                when (position) {
+                    // 0.25x
+                    0 -> editor.putFloat("PLAYBACK_SPEED", 0.25f).apply()
+                    // 0.5x
+                    1 -> editor.putFloat("PLAYBACK_SPEED", 0.5f).apply()
+                    // 0.75x
+                    2 -> editor.putFloat("PLAYBACK_SPEED", 0.75f).apply()
+                    // normal
+                    3 -> editor.putFloat("PLAYBACK_SPEED", 1.0f).apply()
+                    // 1.25x
+                    4 -> editor.putFloat("PLAYBACK_SPEED", 1.25f).apply()
+                    // 1.5x
+                    5 -> editor.putFloat("PLAYBACK_SPEED", 1.5f).apply()
+                    // 1.75x
+                    6 -> editor.putFloat("PLAYBACK_SPEED", 1.75f).apply()
+                    // 2x
+                    7 -> editor.putFloat("PLAYBACK_SPEED", 2.0f).apply()
+                }
             }
 
             //　アイテムが選択されなかった

@@ -5,9 +5,10 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+<!--    android:hardwareAccelerated="false"-->
     <application
         android:allowBackup="false"
-        android:hardwareAccelerated="false"
+
         android:icon="@mipmap/cbb_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/cbb_launcher_round"

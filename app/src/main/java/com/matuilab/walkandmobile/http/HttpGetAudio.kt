@@ -104,7 +104,7 @@ class HttpGetAudio(private val mActivity: Activity) : AsyncTask<String?, Void?, 
             Log.e("java_error", "Failed open connection.")
             e.printStackTrace()
         } catch (e: Exception) {
-            Log.e("java_error", e.message)
+            Log.e("java_error", e.message.toString())
             e.printStackTrace()
         } finally {
             // 後始末
@@ -134,7 +134,7 @@ class HttpGetAudio(private val mActivity: Activity) : AsyncTask<String?, Void?, 
         }
         try {
             val params: PlaybackParams = PlaybackParams()
-//            val sharedPreferences: SharedPreferences = mActivity.getSharedPreferences("user_settings", Context.MODE_PRIVATE)
+            val sharedPreferences: SharedPreferences = mActivity.getSharedPreferences("user_settings", Context.MODE_PRIVATE)
             mediaPlayer.apply {
                 setDataSource(result)
                 // 一時的な速度変更(https://qiita.com/wa2c/items/8eb9d02ad1ce9a17ced8)
@@ -147,7 +147,7 @@ class HttpGetAudio(private val mActivity: Activity) : AsyncTask<String?, Void?, 
                     //mediaPlayer.release();    //release()までやってしまうと、次にsetDataSource()ができなくなる（公式ドキュメントMediaPlayerを参照）
                 }
                 start()
-//                playbackParams = params.setSpeed(sharedPreferences.getFloat("PLAYBACK_SPEED", 1.0f))
+                playbackParams = params.setSpeed(sharedPreferences.getFloat("PLAYBACK_SPEED", 1.0f))
             }
         } catch (e: IOException) {
             // 以下、setDataSource()使用時に必要な例外処理
