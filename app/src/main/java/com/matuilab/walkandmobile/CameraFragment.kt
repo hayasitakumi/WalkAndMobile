@@ -154,8 +154,6 @@ class CameraFragment : Fragment() {
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             val imageAnalysis = ImageAnalysis.Builder().build()
-////            imageAnalysis.setAnalyzer(cameraExecutor, CBBImageAnalyzer())
-//            var codedBrailleBlock: IntArray
             imageAnalysis.setAnalyzer(cameraExecutor, { imageProxy ->
                 /* Create cv::mat(RGB888) from image(NV21) */
                 val matOrg: Mat = getMatFromImage(imageProxy)
@@ -170,6 +168,8 @@ class CameraFragment : Fragment() {
 
                 imageProxy.close()
             })
+
+
 
             try {
                 // Unbind use cases before rebinding
@@ -230,8 +230,6 @@ class CameraFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         cameraExecutor.shutdown()
-//        Code = 0
-//        AngleSab = -1
     }
 
     override fun onDestroy() {
@@ -241,11 +239,9 @@ class CameraFragment : Fragment() {
 
     /**テキストと音声の取得*/
     private fun setCodedBrailleBlock(mat: Mat) {
-//10まで予約しているが全て使っているわけでない
+        //10まで予約しているが全て使っているわけでない
         codedBrailleBlock = IntArray(10)
 
-//        Log.d("camerawidth", inputFrame.width().toString())
-//        Log.d("camerawidth", inputFrame.height().toString())
         //Cのポインタを入れる
         val addr = mat.nativeObjAddr
         Code = 0

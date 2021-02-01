@@ -26,9 +26,4 @@ class PrivacyPolicyFragment : Fragment() {
                 .enableSwipe(true)
                 .load()
     }
-
-//    override fun onDestroyView() {
-//        super.onDestroyView()
-//        myInterface!!.unlockDrawer()
-//    }
 }
