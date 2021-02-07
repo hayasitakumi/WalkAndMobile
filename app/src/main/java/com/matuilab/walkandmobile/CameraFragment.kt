@@ -8,10 +8,7 @@ import android.view.LayoutInflater
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
@@ -44,8 +41,6 @@ class CameraFragment : Fragment() {
         var AngleSab = 5
 
         private const val TAG = "CameraX_Test"
-
-
     }
 
     init {
@@ -144,11 +139,11 @@ class CameraFragment : Fragment() {
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
             // Preview
-            val preview = Preview.Builder()
-                .build()
-                .also {
-                    it.setSurfaceProvider(camera_viewfinder.createSurfaceProvider())
-                }
+//            val preview = Preview.Builder()
+//                .build()
+//                .also {
+//                    it.setSurfaceProvider(camera_viewfinder.createSurfaceProvider())
+//                }
 
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
@@ -159,12 +154,12 @@ class CameraFragment : Fragment() {
                 val matOrg: Mat = getMatFromImage(imageProxy)
 
                 /* Fix image rotation (it looks image in PreviewView is automatically fixed by CameraX???) */
-//                val mat: Mat = fixMatRotation(matOrg)
+                val mat: Mat = fixMatRotation(matOrg)
 
-                Log.i("develop_imageproxy", "[analyze] width = " + imageProxy.width + ", height = " + imageProxy.height + "Rotation = " + camera_viewfinder.display.rotation)
-                Log.i("develop_imageproxy", "[analyze] mat width = " + matOrg.cols() + ", mat height = " + matOrg.rows())
+//                Log.i("develop_imageproxy", "[analyze] width = " + imageProxy.width + ", height = " + imageProxy.height + "Rotation = " + camera_viewfinder.display.rotation)
+//                Log.i("develop_imageproxy", "[analyze] mat width = " + matOrg.cols() + ", mat height = " + matOrg.rows())
 
-                setCodedBrailleBlock(matOrg)
+                setCodedBrailleBlock(mat)
 
                 imageProxy.close()
             })
@@ -177,7 +172,7 @@ class CameraFragment : Fragment() {
 
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageAnalysis
+                    this, cameraSelector, /*preview,*/ imageAnalysis
                 )
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
@@ -205,25 +200,32 @@ class CameraFragment : Fragment() {
         return mat
     }
 
+
+
     private fun fixMatRotation(matOrg: Mat): Mat {
         var mat: Mat
-        when (camera_viewfinder.display.rotation) {
-            Surface.ROTATION_0 -> {
-                mat = Mat(matOrg.cols(), matOrg.rows(), matOrg.type())
-                Core.transpose(matOrg, mat)
-                Core.flip(mat, mat, 1)
-            }
-            Surface.ROTATION_90 -> mat = matOrg
-            Surface.ROTATION_270 -> {
-                mat = matOrg
-                Core.flip(mat, mat, -1)
-            }
-            else -> {
-                mat = Mat(matOrg.cols(), matOrg.rows(), matOrg.type())
-                Core.transpose(matOrg, mat)
-                Core.flip(mat, mat, 1)
-            }
-        }
+
+        mat = Mat(matOrg.cols(), matOrg.rows(), matOrg.type())
+        Core.transpose(matOrg, mat)
+        Core.flip(mat, mat, 1)
+
+//        when (camera_viewfinder.display.rotation) {
+//            Surface.ROTATION_0 -> {
+//                mat = Mat(matOrg.cols(), matOrg.rows(), matOrg.type())
+//                Core.transpose(matOrg, mat)
+//                Core.flip(mat, mat, 1)
+//            }
+//            Surface.ROTATION_90 -> mat = matOrg
+//            Surface.ROTATION_270 -> {
+//                mat = matOrg
+//                Core.flip(mat, mat, -1)
+//            }
+//            else -> {
+//                mat = Mat(matOrg.cols(), matOrg.rows(), matOrg.type())
+//                Core.transpose(matOrg, mat)
+//                Core.flip(mat, mat, 1)
+//            }
+//        }
         return mat
     }
 
@@ -292,13 +294,13 @@ class CameraFragment : Fragment() {
 //        )
 
         /**native-lib.cppで加工した映像をプレビューする*/
-//                /* Convert cv::mat to bitmap for drawing */
-//                val bitmap: Bitmap =
-//                        Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888)
-//                Utils.matToBitmap(mat, bitmap)
-//
-//                /* Display the result onto ImageView */
-//                requireActivity().runOnUiThread { image_view.setImageBitmap(bitmap) }
+                /* Convert cv::mat to bitmap for drawing */
+                val bitmap: Bitmap =
+                        Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888)
+                Utils.matToBitmap(mat, bitmap)
+
+                /* Display the result onto ImageView */
+                requireActivity().runOnUiThread { camera_layered.setImageBitmap(bitmap) }
     }
 
     /**コードとアングルをビューに描画*/

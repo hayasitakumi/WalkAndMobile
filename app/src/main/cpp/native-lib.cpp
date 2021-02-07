@@ -1,5 +1,23 @@
-////2020.08.31/////////////by K.C
-//クッキー用変更　line 380
+///////////////////////////////////////////////////////
+//  コード化点字ブロック　ソフトウェア
+//  W&M System 2020-1-18
+//  for kanazawa
+//  All right Reserved.  W&M System
+//
+//  コード化点字ブロックは　W&Mシステムのパテントです。
+//  利用の場合は、ご連絡お願い致します。
+//
+//  このソフトはフリーでどなたでもお使いいただけます。
+//  但し、お使いになった場合の全てのトラブルはすべて自己責任でお願いします。
+/////////////////////////////////////////
+/////////////////////////////////////////
+//  右上突起が黒の場合　1枚でも読み取り正常に　それ以外は2枚以上の同一コードで正常
+//  2021-1-18 Trcheck 変更　斜め撮影での三角取得許容範囲　
+//  2021-1-18 black_point 修正 black_point---->black_point0
+////   Getcode　内　findContourで3角形を抽出するよう変更追加
+////
+//// refarence 追加　black_point 内
+//クッキー用変更　
 //読み込み画像imageをクローンを作る前にcvtColor(image, image, COLOR_RGBA2RGB)の処理
 //fpsの速度
 
@@ -10,7 +28,6 @@
 #include <opencv2/core.hpp>
 #include <opencv2/calib3d.hpp>
 #include <opencv2/imgproc.hpp>
-#include <android/log.h>
 
 
 using namespace std;
@@ -65,21 +82,21 @@ static int mintd_return(double *a)
     for (int j=0; j<3; j++){ if(a[j] < min){  min = a[j];idx = j;}}
     return idx;
 }
-int maxtd_return(double *a)
+static int maxtd_return(double *a)
 { double max;
     int idx;
     max = a[0]; idx = 0;
     for (int j=0; j<3; j++){  if(a[j] > max){  max = a[j]; idx = j;}  }
     return idx;
 }
-int maxd_return(double *a)
+static int maxd_return(double *a)
 { double max;
     int idx;
     max = a[0]; idx = 0;
     for (int j=0; j<4; j++){  if(a[j] > max){  max = a[j]; idx = j;}  }
     return idx;
 }
-int max_return(int *a)
+static int max_return(int *a)
 { int max,idx;
     max = a[0]; idx = 0;
     for (int j=0; j<4; j++){  if(a[j] > max){  max = a[j]; idx = j;}  }
@@ -219,6 +236,50 @@ static int GfindTr( const Mat& gray, int &X, int &Y )
 }
 
 ///////////////////////////////　２５個の突起の黒点数算出/////Get_codeよりcall
+////////////////////////////////////////
+static void Black_point0(const Mat& mt, int black[5][5])
+{
+    int x,y,x0,y0;
+    //////////////////// 周囲の枠を塗りつぶし/////// これは効果的　////////////////////
+    // Red，太さ3，4近傍連結
+    rectangle(mt, Point(0,0), Point(250, 250), Scalar(0,0,0), 5, 4);
+    //imshow("Rectangle-0",mt);
+
+    for(  int j = 0; j < 5; j++ )
+        for( int k = 0; k < 5; k++)
+        {
+            x0 = 50*k;
+            y0 = 50*j;
+            ////////////////////////
+            black[j][k]=0;
+            /////////////////////////////////////////////////////////////////
+            for (y=y0; y<y0+50; y++)
+                for (x=x0; x<x0+50; x++)
+                {
+                    int color0 = mt.at<unsigned char>(y,x);
+                    if (color0 > 200) //黒カウント 実際は反転なので白をカウント ２００
+                        black[j][k]++;
+                }
+        }
+    //////////////////////////////////////// ここまでは通常　////////////
+    ////////////// 以下　一様に影がある場合　真ん中をリファレンスにする試行
+    int ref = black[2][2];
+    if((ref > 85)&&(ref < 190)){//70だとオリジナルでとれるものもエラーになる場合あり
+        //100前後は突起内の影　西日などによる突起をはみ出した突起の本体の影は180を超えるケースあり
+        for (int i=0;i<5;i++){//print only
+            printf(" \n");
+            for(int j=0;j<5;j++){
+                //int bll=black[i][j]-black[2][2];
+                //if (bll<0) bll=0;
+                //printf(" %3d ",bll);//// -ref 2019-12-26
+                black[i][j]=black[i][j]-ref;
+                if (black[i][j]<0) black[i][j]=0;
+                printf(" %3d ",black[i][j]);//// -ref 2019-12-26
+            }
+        }
+    }
+    ///////////////////////////////////
+}
 static void Black_point(const Mat& mt, int black[5][5], int X, int Y)
 {
 
@@ -359,8 +420,8 @@ static long Getcode( const Mat& image, int *X, int *Y,int &invmean)
     }
 
     //////////////////////////////////////
-    //Black_point(mt,black,X[0],Y[0]);
-    Black_point(mt,black,xx,yy);
+    //Black_point(mt,black,xx,yy);
+    Black_point0(mt,black);//修正2020－1
     //////////////////////////////////////// ここまでは通常　////////////
     for (int i=0;i<5;i++){//print only
         printf(" \n");
@@ -1237,7 +1298,12 @@ static int Trcheck(vector<vector<Point> >& tr, int tindex, vector<vector<Point> 
         int jmax = maxtd_return(lt);
         int jmin = mintd_return(lt);
         //printf("TRMax=%lf TRMin=%lf\n",lt[jmax],lt[jmin]);
-        if (lt[jmax] > lt[jmin]*25) { printf("\nTR-length Err \n"); continue;}//長辺が短辺の５倍以上なら除外２０１９－１１－１８
+        //if (lt[jmax] > lt[jmin]*25)
+        if (lt[jmax] > lt[jmin]*49)
+            { printf("\nTR-length Err \n");
+                continue;}
+        //長辺が短辺の５倍以上なら除外２０１９－１１－１８  -----> 7倍以上に変更2020－1－25
+        // 斜めからの画像取り込み時の許容範囲拡大（三角形）
         //printf( "Next =%d ax,ay=%d %d cx,cy=%d %d",n, ax,ay,cx,cy );
         onaji=0;
         for (int t=0; t<s; t++)// セーブしてあるTr　ｓ個
@@ -1523,24 +1589,16 @@ static int FHomo(const Mat& image, vector<vector<Point> >& sq, int sqindex, vect
                 //printf("  PX PY = %d %d ", ax[p],bx[p]);
                 //printf("  P = %d  ", p);
                 if (ax[0] < ax[2]){
-//                    if (p==0) angl=0;
-//                    if (p==1) angl=3;
-//                    if (p==2) angl=2;
-//                    if (p==3) angl=1;
+                    if (p==0) angl=0;
+                    if (p==1) angl=3;
+                    if (p==2) angl=2;
+                    if (p==3) angl=1;
+                }
+                else if (ax[0] > ax[2]){
                     if (p==0) angl=3;
                     if (p==1) angl=2;
                     if (p==2) angl=1;
                     if (p==3) angl=0;
-                }
-                else if (ax[0] > ax[2]){
-//                    if (p==0) angl=3;
-//                    if (p==1) angl=2;
-//                    if (p==2) angl=1;
-//                    if (p==3) angl=0;
-                    if (p==0) angl=2;
-                    if (p==1) angl=1;
-                    if (p==2) angl=0;
-                    if (p==3) angl=3;
                     //angl = pp;printf("  Angle = %d ", angl);
                 }
 
@@ -1770,7 +1828,6 @@ static int Trmask(const Mat& image, vector<vector<Point> >& sq, int sqindex, con
 }
 
 
-/**[com.matuilab.walkandmobile.CamereraFragment.recog]からのアクセス*/
 extern "C" {
 JNIEXPORT void JNICALL
 Java_com_matuilab_walkandmobile_CameraFragment_recog(
@@ -1779,9 +1836,7 @@ Java_com_matuilab_walkandmobile_CameraFragment_recog(
         jlong imageAddr,
         jintArray  RetObj
 ) {
-
     Mat &image0 = *(Mat *) imageAddr;
-//    __android_log_print(ANDROID_LOG_VERBOSE, "develop_mat", "Hello %d",&image0);
     jint *Ret = env->GetIntArrayElements(RetObj, NULL);
     int tindex = 0;
     int trindex = 0;
@@ -1827,21 +1882,21 @@ Java_com_matuilab_walkandmobile_CameraFragment_recog(
 
     //////////////////追加　変更//////2020-1-2///////////////////////////////////
 
-//    Rect rect(0,0,800,720);
-//    //rectangle(image0,rect,Scalar(255,255,0),2);//画像エリア表示
-//    Mat image1(image0,rect);//オリジナル画像から切り取りーーー＞image1
-//
-//    Mat image2(image1.size(),CV_8UC3);
-//    cvtColor(image1, image2, COLOR_RGBA2BGR);
-//    int invmean0=mean(image2)[0];
-//    printf("rect-image-mean : %d\n" ,invmean0);//輝度の取得　２０１９－１２－２６
-    ///////////////////////////////////////////////////////////////////////////////
+    // Rect rect(0,0,800,720);
+    // //rectangle(image0,rect,Scalar(255,255,0),2);//画像エリア表示
+    // Mat image1(image0,rect);//オリジナル画像から切り取りーーー＞image1
 
-    ///////////////////ここまで/////////////////////////////////////////////////////
-    //移植時改良点
-    ////////////////////////////////////////////////////////////
-//    Mat image=Mat(image0.size(),CV_8UC3);
-//    cvtColor(image0, image, COLOR_RGBA2BGR);
+    // Mat image2(image1.size(),CV_8UC3);
+    // cvtColor(image1, image2, COLOR_RGBA2BGR);
+    // int invmean0=mean(image2)[0];
+    // printf("rect-image-mean : %d\n" ,invmean0);//輝度の取得　２０１９－１２－２６
+    // ///////////////////////////////////////////////////////////////////////////////
+
+    // ///////////////////ここまで/////////////////////////////////////////////////////
+    // //移植時改良点
+    // ////////////////////////////////////////////////////////////
+    // Mat image=Mat(image0.size(),CV_8UC3);
+    // cvtColor(image0, image, COLOR_RGBA2BGR);
 
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1884,12 +1939,13 @@ Java_com_matuilab_walkandmobile_CameraFragment_recog(
     ///////////////////////////////////////
     //       Mat roi = image0(Rect(0,0,image.cols,image.rows));//これうまくいかない　PCではOK
     //       image.copyTo(roi);
-//    cvtColor(image, image0, COLOR_BGR2RGBA);
+    // cvtColor(image, image0, COLOR_BGR2RGBA);
     //cvtColor(image0, image0, COLOR_BGR2RGBA);
     /////////////////////////////////////////////
     Ret[0]=ret;
     Ret[3]=invmean;//画像全体の輝度
     Ret[4]=invmeanf;//Get_codeへの画像輝度
+    /*
     if ((ret == 1) || (ret == 0)) {// 1:２個取れた時 0:１個取れた時
         Ret[1] = Code;
         Ret[2] = Angl;
@@ -1901,6 +1957,23 @@ Java_com_matuilab_walkandmobile_CameraFragment_recog(
 
         }
     }
+     */
+    if ((ret == 1) || (ret == 0)) {// 1:２個取れた時 0:１個取れた時
+        Ret[1] = Code;
+        Ret[2] = Angl;
+        //env->ReleaseIntArrayElements(RetObj, Ret, 0);
+        if (ret == 0) {// 1個のみ
+            ///////////右上黒　平面ブロックコードは一個だけでもOK 2020-12-15
+            if  ((Code < 1048576)||(Code > 2097152))
+                Ret[0]=-1;
+            /////////////
+        }
+        if (ret == 1) {//２個以上取れた時
+
+        }
+    }
     env->ReleaseIntArrayElements(RetObj, Ret, 0);
 }
 }
+
+
