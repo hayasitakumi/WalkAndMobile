@@ -8,7 +8,6 @@
     <fragment
         android:id="@+id/permission_check_fragment"
         android:name="com.matuilab.walkandmobile.PermissionCheckFragment"
-        android:label="PermissionCheckFragment"
         tools:layout="@layout/fragment_permission_check" >
         <action
             android:id="@+id/action_permission_check_to_camera"
@@ -21,7 +20,7 @@
     <fragment
         android:id="@+id/camera_fragment"
         android:name="com.matuilab.walkandmobile.CameraFragment"
-        android:label="CameraFragment"
+        android:label="@string/home_text"
         tools:layout="@layout/fragment_camera" >
 <!--        <action-->
 <!--            android:id="@+id/action_camera_to_privacy_policy"-->
@@ -36,12 +35,12 @@
     <fragment
         android:id="@+id/privacy_policy_fragment"
         android:name="com.matuilab.walkandmobile.PrivacyPolicyFragment"
-        android:label="PrivacyPolicyFragment"
+        android:label="@string/privacy_policy_text"
         tools:layout="@layout/fragment_privacy_policy"/>
     <fragment
         android:id="@+id/settings_fragment"
         android:name="com.matuilab.walkandmobile.SettingsFragment"
-        android:label="SettingsFragment"
+        android:label="@string/settings_text"
         tools:layout="@layout/fragment_settings"/>
 
 </navigation>

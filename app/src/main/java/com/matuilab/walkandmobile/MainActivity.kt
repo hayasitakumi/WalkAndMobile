@@ -3,6 +3,7 @@ package com.matuilab.walkandmobile
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -13,7 +14,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -32,8 +32,25 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.permission_check_fragment, R.id.camera_fragment), drawerLayout)
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.permission_check_fragment, R.id.camera_fragment
+            ), drawerLayout
+        )
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id == R.id.permission_check_fragment) {
+                toolbar.visibility = View.GONE
+                navView.visibility = View.GONE
+            } else {
+                toolbar.visibility = View.VISIBLE
+                navView.visibility = View.VISIBLE
+            }
+            if (destination.id == R.id.settings_fragment || destination.id == R.id.privacy_policy_fragment) {
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            } else {
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            }
+        }
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }

@@ -12,6 +12,8 @@
     <string name="download_in_advance_nebutton">案内文章のみ取得</string>
     <string name="download_in_advance_nbutton">キャンセル</string>
 
+    <string name="download_in_advance_hidden_dialog_text">次回から表示しない</string>
+
     <string-array name="download_in_advance_button_array">
         <item>両方取得</item>
         <item>案内情報のみ取得</item>
@@ -53,10 +55,14 @@
         <item>0.25倍速</item>
         <item>0.5倍速</item>
         <item>0.75倍速</item>
-        <item>normal</item>
+        <item>標準</item>
         <item>1.25倍速</item>
         <item>1.5倍速</item>
         <item>1.75倍速</item>
         <item>2倍速</item>
     </string-array>
+
+    <string name="home_text">ホーム</string>
+    <string name="privacy_policy_text">プライバシーポリシー</string>
+    <string name="settings_text">設定</string>
 </resources>

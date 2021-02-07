@@ -12,8 +12,11 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
+import com.matuilab.walkandmobile.http.HttpGetJson
+import com.matuilab.walkandmobile.util.LanguageProcessor
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.fragment_settings.view.*
+import java.util.*
 
 
 class SettingsFragment : Fragment() {
@@ -93,13 +96,23 @@ class SettingsFragment : Fragment() {
         settings_listview.adapter = downloadAdapter
 
         settings_listview.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+            val getJson = HttpGetJson(requireActivity())
+            val saveAppDir = requireActivity().filesDir.absolutePath
+
+            val languageProcessor = LanguageProcessor(resources.getStringArray(R.array.code_language))
+            var localLang = Locale.getDefault().language   //端末の設定言語を取得
+
+            if (languageProcessor.indexOfLanguage(localLang) <= 0) {
+                // 対応リストに無ければ英語を使用（日本語、英語でもなければ英語を設定）
+                localLang = "en"
+            }
             //when you need to act on itemClick
             when (position) {
                 0 -> {
-                    Log.d("listview_test", "click0")
+                    getJson.execute(saveAppDir, languageProcessor.addressLanguage(localLang))
                 }
                 1 -> {
-                    Log.d("listview_test", "click1")
+                    getJson.execute(saveAppDir, languageProcessor.addressLanguage(localLang), "FALSE")
                 }
             }
         }
