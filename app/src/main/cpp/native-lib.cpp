@@ -1895,17 +1895,17 @@ Java_com_matuilab_walkandmobile_CameraFragment_recog(
     // ///////////////////ここまで/////////////////////////////////////////////////////
     // //移植時改良点
     // ////////////////////////////////////////////////////////////
-    // Mat image=Mat(image0.size(),CV_8UC3);
-    // cvtColor(image0, image, COLOR_RGBA2BGR);
+     Mat image=Mat(image0.size(),CV_8UC3);
+     cvtColor(image0, image, COLOR_RGBA2BGR);
 
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 
-    Mat img1 = Mat(image0.size(), CV_8UC3, Scalar(100));// 背景 灰色　３角形ではよい
-    Mat img2 = Mat(image0.size(), CV_8UC3, Scalar(0));// 背景　黒　for OTSU Sq find
+    Mat img1 = Mat(image.size(), CV_8UC3, Scalar(100));// 背景 灰色　３角形ではよい
+    Mat img2 = Mat(image.size(), CV_8UC3, Scalar(0));// 背景　黒　for OTSU Sq find
     //Mat image1 = Mat(image.size(), CV_8UC3);
-    Mat img3 = Mat(image0.size(), CV_8UC3, Scalar(0));// 背景　黒　
-    Mat img4 = Mat(image0.size(), CV_8UC3, Scalar(255));//背景　白
+    Mat img3 = Mat(image.size(), CV_8UC3, Scalar(0));// 背景　黒　
+    Mat img4 = Mat(image.size(), CV_8UC3, Scalar(255));//背景　白
 
     //int hight = image.rows;
     //int width = image.cols;
@@ -1913,16 +1913,16 @@ Java_com_matuilab_walkandmobile_CameraFragment_recog(
 
     //image = imread("test0.jpg" , 1);
     //   waitKey(33);
-    int invmean=mean(image0)[0];
+    int invmean=mean(image)[0];
     printf("image-mean : %d\n" ,invmean);//輝度の取得　２０１９－１２－２６
 
-    sqaindex = mask(image0, img1, img2, Sqa);
-    sindex = findSq(image0, img2, Sq);//orignal+ yellow-maskでの抽出　sindex;４角形個数
+    sqaindex = mask(image, img1, img2, Sqa);
+    sindex = findSq(image, img2, Sq);//orignal+ yellow-maskでの抽出　sindex;４角形個数
     if ((sindex + sqaindex) != 0)
         sqindex = Sqcheck(Sq, sindex, Sqa, sqaindex, sq);
 
     if (sqindex != 0) {//四角形があった場合のみ三角形をその内部で探す
-        Trmask(image0, sq, sqindex, img3, img4);//img3 black, img4 white-Tr
+        Trmask(image, sq, sqindex, img3, img4);//img3 black, img4 white-Tr
         tindex = findTr(img3, img4, Tr);
     }
     /////////////////////////////////
@@ -1933,13 +1933,13 @@ Java_com_matuilab_walkandmobile_CameraFragment_recog(
     Code=0;
     Angl=-1;
     int invmeanf;
-    int ret = FHomo(image0, sq, sqindex, tr, trindex, invmeanf);//image--->image0
+    int ret = FHomo(image, sq, sqindex, tr, trindex, invmeanf);//image--->image0
     ///////////// orignal 画像を渡すこと　マスクではだめ
     /////////////////////////////////////
     ///////////////////////////////////////
     //       Mat roi = image0(Rect(0,0,image.cols,image.rows));//これうまくいかない　PCではOK
     //       image.copyTo(roi);
-    // cvtColor(image, image0, COLOR_BGR2RGBA);
+     cvtColor(image, image0, COLOR_BGR2RGBA);
     //cvtColor(image0, image0, COLOR_BGR2RGBA);
     /////////////////////////////////////////////
     Ret[0]=ret;

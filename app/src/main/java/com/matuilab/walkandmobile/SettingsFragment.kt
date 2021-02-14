@@ -109,10 +109,10 @@ class SettingsFragment : Fragment() {
             //when you need to act on itemClick
             when (position) {
                 0 -> {
-                    getJson.execute(saveAppDir, languageProcessor.addressLanguage(localLang))
+                    getJson.execute(saveAppDir, languageProcessor.addressLanguage(localLang), "FALSE")
                 }
                 1 -> {
-                    getJson.execute(saveAppDir, languageProcessor.addressLanguage(localLang), "FALSE")
+                    getJson.execute(saveAppDir, languageProcessor.addressLanguage(localLang))
                 }
             }
         }

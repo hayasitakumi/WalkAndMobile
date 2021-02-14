@@ -53,7 +53,8 @@ class ServerConnection {
     ////////// サーバURL変更の際はここを更新する
     //////////  末尾に"/スラッシュ"を付ける
     /////////////////////////////////////////////
-    val serverUrl = "http://ec2-3-136-168-45.us-east-2.compute.amazonaws.com/tenji/"
+//    val serverUrl = "http://ec2-3-136-168-45.us-east-2.compute.amazonaws.com/tenji/"
+    val serverUrl = "http://18.224.144.136/tenji/"
     fun getMessageUrl(code: Int, angle: Int, category: String, lang: String?): String {
         /**案内情報取得(get_message)のURLのみを取得する
          * 引数は【言語コード】

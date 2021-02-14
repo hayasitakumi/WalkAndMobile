@@ -29,7 +29,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 //CameraBridgeViewBase.CvCameraViewListener2
-class CameraFragment : Fragment() {
+class CameraFragment : Fragment(), CameraBridgeViewBase.CvCameraViewListener {
 
     companion object {
         lateinit var codedBrailleBlock: IntArray
@@ -77,7 +77,7 @@ class CameraFragment : Fragment() {
         mLoaderCallback = object : BaseLoaderCallback(requireContext()) {
             override fun onManagerConnected(status: Int) {
                 when (status) {
-                    LoaderCallbackInterface.SUCCESS -> startCamera()
+                    LoaderCallbackInterface.SUCCESS -> camera_cameraview.enableView()
                     else -> super.onManagerConnected(status)
                 }
             }
@@ -99,7 +99,8 @@ class CameraFragment : Fragment() {
         /** カメラビュー */
 //        viewFinder = view.findViewById(R.id.camera_viewfinder)
         cameraExecutor = Executors.newSingleThreadExecutor()
-        startCamera()
+
+        camera_cameraview.setCvCameraViewListener(this)
 
         /**音声停止ボタン*/
         camera_stopaudiobutton.setOnClickListener {
@@ -119,115 +120,22 @@ class CameraFragment : Fragment() {
 
         // 非同期でライブラリの読み込み/初期化を行う
         if (!OpenCVLoader.initDebug()) {
-            //Log.d("onResume", "Internal OpenCV library not found. Using OpenCV Manager for initialization")
+            Log.d(
+                "onResume",
+                "Internal OpenCV library not found. Using OpenCV Manager for initialization"
+            )
             OpenCVLoader.initAsync(
                 OpenCVLoader.OPENCV_VERSION_3_0_0,
                 requireContext(),
                 mLoaderCallback
             )
         } else {
-            //Log.d("onResume", "OpenCV library found inside package. Using it!")
+            Log.d("onResume", "OpenCV library found inside package. Using it!")
             mLoaderCallback!!.onManagerConnected(LoaderCallbackInterface.SUCCESS)
         }
     }
 
-    private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
 
-        cameraProviderFuture.addListener(Runnable {
-            // Used to bind the lifecycle of cameras to the lifecycle owner
-            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-
-            // Preview
-//            val preview = Preview.Builder()
-//                .build()
-//                .also {
-//                    it.setSurfaceProvider(camera_viewfinder.createSurfaceProvider())
-//                }
-
-            // Select back camera as a default
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-            val imageAnalysis = ImageAnalysis.Builder().build()
-            imageAnalysis.setAnalyzer(cameraExecutor, { imageProxy ->
-                /* Create cv::mat(RGB888) from image(NV21) */
-                val matOrg: Mat = getMatFromImage(imageProxy)
-
-                /* Fix image rotation (it looks image in PreviewView is automatically fixed by CameraX???) */
-                val mat: Mat = fixMatRotation(matOrg)
-
-//                Log.i("develop_imageproxy", "[analyze] width = " + imageProxy.width + ", height = " + imageProxy.height + "Rotation = " + camera_viewfinder.display.rotation)
-//                Log.i("develop_imageproxy", "[analyze] mat width = " + matOrg.cols() + ", mat height = " + matOrg.rows())
-
-                setCodedBrailleBlock(mat)
-
-                imageProxy.close()
-            })
-
-
-
-            try {
-                // Unbind use cases before rebinding
-                cameraProvider.unbindAll()
-
-                // Bind use cases to camera
-                cameraProvider.bindToLifecycle(
-                    this, cameraSelector, /*preview,*/ imageAnalysis
-                )
-            } catch (exc: Exception) {
-                Log.e(TAG, "Use case binding failed", exc)
-            }
-
-        }, ContextCompat.getMainExecutor(requireContext()))
-    }
-
-    private fun getMatFromImage(image: ImageProxy): Mat {
-        /* https://stackoverflow.com/questions/30510928/convert-android-camera2-api-yuv-420-888-to-rgb */
-        val yBuffer: ByteBuffer = image.planes[0].buffer
-        val uBuffer: ByteBuffer = image.planes[1].buffer
-        val vBuffer: ByteBuffer = image.planes[2].buffer
-        val ySize: Int = yBuffer.remaining()
-        val uSize: Int = uBuffer.remaining()
-        val vSize: Int = vBuffer.remaining()
-        val nv21 = ByteArray(ySize + uSize + vSize)
-        yBuffer.get(nv21, 0, ySize)
-        vBuffer.get(nv21, ySize, vSize)
-        uBuffer.get(nv21, ySize + vSize, uSize)
-        val yuv = Mat(image.height + image.height / 2, image.width, CvType.CV_8UC1)
-        yuv.put(0, 0, nv21)
-        val mat = Mat()
-        Imgproc.cvtColor(yuv, mat, Imgproc.COLOR_YUV2RGB_NV21, 3)
-        return mat
-    }
-
-
-
-    private fun fixMatRotation(matOrg: Mat): Mat {
-        var mat: Mat
-
-        mat = Mat(matOrg.cols(), matOrg.rows(), matOrg.type())
-        Core.transpose(matOrg, mat)
-        Core.flip(mat, mat, 1)
-
-//        when (camera_viewfinder.display.rotation) {
-//            Surface.ROTATION_0 -> {
-//                mat = Mat(matOrg.cols(), matOrg.rows(), matOrg.type())
-//                Core.transpose(matOrg, mat)
-//                Core.flip(mat, mat, 1)
-//            }
-//            Surface.ROTATION_90 -> mat = matOrg
-//            Surface.ROTATION_270 -> {
-//                mat = matOrg
-//                Core.flip(mat, mat, -1)
-//            }
-//            else -> {
-//                mat = Mat(matOrg.cols(), matOrg.rows(), matOrg.type())
-//                Core.transpose(matOrg, mat)
-//                Core.flip(mat, mat, 1)
-//            }
-//        }
-        return mat
-    }
 
     override fun onStop() {
         super.onStop()
@@ -239,13 +147,31 @@ class CameraFragment : Fragment() {
         cameraExecutor.shutdown()
     }
 
-    /**テキストと音声の取得*/
-    private fun setCodedBrailleBlock(mat: Mat) {
+
+
+
+    /**コードとアングルをビューに描画*/
+    private fun showCodeAndAngle(code: Int, angle: Int) {
+        mHandler!!.post {
+            camera_code.text = code.toString()
+            camera_angle.text = angle.toString()
+        }
+    }
+
+    /**native-libの定義*/
+    private external fun recog(imageAddr: Long, sample: IntArray?)
+
+    override fun onCameraViewStarted(width: Int, height: Int) {}
+
+    override fun onCameraViewStopped() {}
+
+    override fun onCameraFrame(inputFrame: Mat?): Mat {
+
         //10まで予約しているが全て使っているわけでない
         codedBrailleBlock = IntArray(10)
 
-        //Cのポインタを入れる
-        val addr = mat.nativeObjAddr
+        //Cのポインタを入れる？
+        val addr = inputFrame!!.nativeObjAddr
         Code = 0
         Angle = -1
         mean0 = 0
@@ -282,35 +208,10 @@ class CameraFragment : Fragment() {
                 val audioTask = HttpGetAudio(requireActivity())
                 audioTask.execute(audioUrl, savePath) //引数は【音声ファイルのURL】と【音声ファイルの絶対パス】
             }
-
-            // 取得コードをCodeSabに入れ、同じコードを取得し続けても通信をしないようにする
+            // 取得コードをCodeSabに入れ、同じコードを取得し続けても通信をしないようにする  ------ 2020/02/01
             CodeSab = Code
             AngleSab = Angle
         }
-
-//        Log.d(
-//            "inputFrame",
-//            "inputFrame:width=${inputFrame!!.rgba().width()}, height=${inputFrame.rgba().width()}"
-//        )
-
-        /**native-lib.cppで加工した映像をプレビューする*/
-                /* Convert cv::mat to bitmap for drawing */
-                val bitmap: Bitmap =
-                        Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888)
-                Utils.matToBitmap(mat, bitmap)
-
-                /* Display the result onto ImageView */
-                requireActivity().runOnUiThread { camera_layered.setImageBitmap(bitmap) }
+        return inputFrame
     }
-
-    /**コードとアングルをビューに描画*/
-    private fun showCodeAndAngle(code: Int, angle: Int) {
-        mHandler!!.post {
-            camera_code.text = code.toString()
-            camera_angle.text = angle.toString()
-        }
-    }
-
-    /**native-libの定義*/
-    private external fun recog(imageAddr: Long, sample: IntArray?)
 }
