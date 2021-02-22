@@ -1589,16 +1589,24 @@ static int FHomo(const Mat& image, vector<vector<Point> >& sq, int sqindex, vect
                 //printf("  PX PY = %d %d ", ax[p],bx[p]);
                 //printf("  P = %d  ", p);
                 if (ax[0] < ax[2]){
-                    if (p==0) angl=0;
-                    if (p==1) angl=3;
-                    if (p==2) angl=2;
-                    if (p==3) angl=1;
-                }
-                else if (ax[0] > ax[2]){
+//                    if (p==0) angl=0;
+//                    if (p==1) angl=3;
+//                    if (p==2) angl=2;
+//                    if (p==3) angl=1;
                     if (p==0) angl=3;
                     if (p==1) angl=2;
                     if (p==2) angl=1;
                     if (p==3) angl=0;
+                }
+                else if (ax[0] > ax[2]){
+//                    if (p==0) angl=3;
+//                    if (p==1) angl=2;
+//                    if (p==2) angl=1;
+//                    if (p==3) angl=0;
+                    if (p==0) angl=2;
+                    if (p==1) angl=1;
+                    if (p==2) angl=0;
+                    if (p==3) angl=3;
                     //angl = pp;printf("  Angle = %d ", angl);
                 }
 

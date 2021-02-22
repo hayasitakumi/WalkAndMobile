@@ -147,9 +147,6 @@ class CameraFragment : Fragment(), CameraBridgeViewBase.CvCameraViewListener {
         cameraExecutor.shutdown()
     }
 
-
-
-
     /**コードとアングルをビューに描画*/
     private fun showCodeAndAngle(code: Int, angle: Int) {
         mHandler!!.post {
